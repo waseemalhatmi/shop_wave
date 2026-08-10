@@ -1,0 +1,97 @@
+name: shop_wave
+description: ShopWave — A production-ready Flutter e-commerce application.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.10.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # ── State Management ─────────────────────────────────────────────
+  flutter_riverpod: ^2.6.1
+  riverpod_annotation: ^2.3.5
+  hooks_riverpod: ^2.6.1
+
+  # ── Navigation ───────────────────────────────────────────────────
+  go_router: ^14.6.3
+
+  # ── Backend ──────────────────────────────────────────────────────
+  supabase_flutter: ^2.8.4
+  dio: ^5.8.0+1
+
+  # ── Code Generation / Serialization ──────────────────────────────
+  freezed_annotation: ^2.4.4
+  json_annotation: ^4.9.0
+
+  # ── Local Storage ────────────────────────────────────────────────
+  hive_flutter: ^1.1.0
+  shared_preferences: ^2.5.3
+  flutter_secure_storage: ^9.2.4
+
+  # ── UI / UX ──────────────────────────────────────────────────────
+  flutter_hooks: ^0.20.5
+  cached_network_image: ^3.4.1
+  shimmer: ^3.0.0
+  lottie: ^3.3.1
+  flutter_svg: ^2.0.17
+  smooth_page_indicator: ^1.2.0+3
+  flutter_rating_bar: ^4.0.1
+  another_flushbar: ^1.12.30
+  gap: ^3.0.1
+  google_fonts: ^6.2.1           # Outfit font via CDN — no local files needed
+
+  # ── Forms & Validation ───────────────────────────────────────────
+  reactive_forms: ^17.0.1
+
+  # ── Localization ─────────────────────────────────────────────────
+  intl: ^0.20.2
+
+  # ── Utilities ────────────────────────────────────────────────────
+  dartz: ^0.10.1
+  equatable: ^2.0.7
+  logger: ^2.5.0
+  connectivity_plus: ^6.1.4
+  image_picker: ^1.1.2
+  url_launcher: ^6.3.1
+  share_plus: ^10.1.4
+  package_info_plus: ^8.3.0
+  permission_handler: ^11.4.0
+  path_provider: ^2.1.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_launcher_icons: ^0.13.1
+
+  # ── Code Generation ───────────────────────────────────────────────
+  build_runner: ^2.4.15
+  freezed: ^2.5.8
+  json_serializable: ^6.9.5
+  riverpod_generator: ^2.4.4
+
+  # ── Linting ───────────────────────────────────────────────────────
+  flutter_lints: ^5.0.0
+
+  # ── Testing ───────────────────────────────────────────────────────
+  mocktail: ^1.0.4
+  # riverpod_test not added here — use direct ProviderContainer in unit tests
+
+flutter:
+  uses-material-design: true
+  generate: true
+
+  assets:
+    - assets/images/
+    - assets/icons/
+    - assets/animations/
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icons/app_icon.png"

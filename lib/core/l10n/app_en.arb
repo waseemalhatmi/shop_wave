@@ -1,0 +1,226 @@
+{
+  "@@locale": "en",
+  "@@last_modified": "2026-08-05",
+
+  "appName": "ShopWave",
+  "@appName": { "description": "The application name" },
+
+  "general_ok": "OK",
+  "general_cancel": "Cancel",
+  "general_retry": "Try Again",
+  "general_save": "Save",
+  "general_delete": "Delete",
+  "general_edit": "Edit",
+  "general_done": "Done",
+  "general_back": "Back",
+  "general_next": "Next",
+  "general_search": "Search",
+  "general_loading": "Loading...",
+  "general_error": "Something went wrong",
+  "general_no_internet": "No internet connection",
+  "general_no_internet_desc": "Please check your connection and try again.",
+  "general_server_error": "Server error. Please try again.",
+  "general_empty": "Nothing here yet",
+  "general_required": "This field is required",
+  "general_see_all": "See All",
+  "general_sar": "SAR",
+  "general_free": "Free",
+
+  "onboarding_skip": "Skip",
+  "onboarding_get_started": "Get Started",
+  "onboarding_slide1_title": "Discover Amazing Products",
+  "onboarding_slide1_desc": "Browse thousands of products from top brands, all in one place.",
+  "onboarding_slide2_title": "Fast & Secure Checkout",
+  "onboarding_slide2_desc": "Shop with confidence. Secure payments and hassle-free returns.",
+  "onboarding_slide3_title": "Track Your Orders",
+  "onboarding_slide3_desc": "Real-time updates on every order, right to your door.",
+
+  "auth_login": "Log In",
+  "auth_register": "Sign Up",
+  "auth_logout": "Log Out",
+  "auth_email": "Email Address",
+  "auth_email_hint": "Enter your email",
+  "auth_email_invalid": "Please enter a valid email address",
+  "auth_password": "Password",
+  "auth_password_hint": "Enter your password",
+  "auth_password_min": "Password must be at least 8 characters",
+  "auth_password_confirm": "Confirm Password",
+  "auth_password_mismatch": "Passwords do not match",
+  "auth_full_name": "Full Name",
+  "auth_full_name_hint": "Enter your full name",
+  "auth_full_name_min": "Name must be at least 2 characters",
+  "auth_phone": "Phone Number",
+  "auth_forgot_password": "Forgot Password?",
+  "auth_reset_password": "Reset Password",
+  "auth_reset_sent": "Reset link sent to your email",
+  "auth_no_account": "Don't have an account?",
+  "auth_have_account": "Already have an account?",
+  "auth_or": "or",
+  "auth_continue_google": "Continue with Google",
+  "auth_otp_title": "Enter OTP",
+  "auth_otp_desc": "We sent a 6-digit code to {email}",
+  "@auth_otp_desc": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "auth_otp_resend": "Resend Code",
+  "auth_otp_resend_in": "Resend in {seconds}s",
+  "@auth_otp_resend_in": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
+  },
+
+  "nav_home": "Home",
+  "nav_categories": "Categories",
+  "nav_cart": "Cart",
+  "nav_favorites": "Favorites",
+  "nav_profile": "Profile",
+
+  "home_search_hint": "Search products...",
+  "home_banners": "Featured",
+  "home_categories": "Categories",
+  "home_flash_deals": "Flash Deals",
+  "home_featured": "Featured Products",
+  "home_new_arrivals": "New Arrivals",
+  "home_best_sellers": "Best Sellers",
+
+  "product_add_to_cart": "Add to Cart",
+  "product_buy_now": "Buy Now",
+  "product_out_of_stock": "Out of Stock",
+  "product_in_stock": "In Stock",
+  "product_description": "Description",
+  "product_reviews": "Reviews",
+  "product_related": "You May Also Like",
+  "product_select_variant": "Select Options",
+  "product_size": "Size",
+  "product_color": "Color",
+  "product_quantity": "Quantity",
+  "product_share": "Share",
+  "product_added_to_cart": "Added to cart!",
+  "product_added_to_favorites": "Added to favorites",
+  "product_removed_from_favorites": "Removed from favorites",
+
+  "cart_title": "My Cart",
+  "cart_empty": "Your cart is empty",
+  "cart_empty_desc": "Looks like you haven't added anything yet.",
+  "cart_shop_now": "Shop Now",
+  "cart_subtotal": "Subtotal",
+  "cart_shipping": "Shipping",
+  "cart_discount": "Discount",
+  "cart_total": "Total",
+  "cart_checkout": "Proceed to Checkout",
+  "cart_items": "{count} Items",
+  "@cart_items": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "checkout_title": "Checkout",
+  "checkout_delivery_address": "Delivery Address",
+  "checkout_payment_method": "Payment Method",
+  "checkout_order_summary": "Order Summary",
+  "checkout_coupon": "Apply Coupon",
+  "checkout_coupon_hint": "Enter coupon code",
+  "checkout_coupon_applied": "Coupon applied!",
+  "checkout_coupon_invalid": "Invalid or expired coupon",
+  "checkout_place_order": "Place Order",
+  "checkout_cash_on_delivery": "Cash on Delivery",
+  "checkout_card": "Credit / Debit Card",
+
+  "order_confirmed_title": "Order Confirmed!",
+  "order_confirmed_desc": "Your order #{orderId} has been placed successfully.",
+  "@order_confirmed_desc": {
+    "placeholders": {
+      "orderId": { "type": "String" }
+    }
+  },
+  "order_track": "Track Order",
+  "order_continue_shopping": "Continue Shopping",
+  "orders_title": "My Orders",
+  "orders_empty": "No orders yet",
+  "order_detail_title": "Order Details",
+  "order_status_pending": "Pending",
+  "order_status_confirmed": "Confirmed",
+  "order_status_processing": "Processing",
+  "order_status_shipped": "Shipped",
+  "order_status_delivered": "Delivered",
+  "order_status_cancelled": "Cancelled",
+  "order_status_refunded": "Refunded",
+
+  "favorites_title": "My Favorites",
+  "favorites_empty": "No favorites yet",
+  "favorites_empty_desc": "Tap the heart on any product to save it here.",
+
+  "profile_title": "My Profile",
+  "profile_edit": "Edit Profile",
+  "profile_orders": "My Orders",
+  "profile_addresses": "Addresses",
+  "profile_notifications": "Notifications",
+  "profile_settings": "Settings",
+  "profile_help": "Help & Support",
+  "profile_about": "About ShopWave",
+  "profile_account": "Account",
+  "profile_preferences": "Preferences",
+  "profile_privacy": "Privacy Policy",
+
+  "address_title": "Addresses",
+  "address_add": "Add Address",
+  "address_edit": "Edit Address",
+  "address_delete": "Delete Address",
+  "address_set_default": "Set as Default",
+  "address_default": "Default",
+  "address_home": "Home",
+  "address_work": "Work",
+  "address_full_name": "Full Name",
+  "address_phone": "Phone",
+  "address_city": "City",
+  "address_street": "Street Address",
+  "address_postal": "Postal Code",
+  "address_building": "Building / Apartment",
+  "address_saved": "Address saved",
+
+  "notifications_title": "Notifications",
+  "notifications_empty": "No notifications",
+  "notifications_mark_read": "Mark All as Read",
+
+  "settings_title": "Settings",
+  "settings_theme": "Theme",
+  "settings_theme_light": "Light",
+  "settings_theme_dark": "Dark",
+  "settings_theme_system": "System Default",
+  "settings_language": "Language",
+  "settings_language_en": "English",
+  "settings_language_ar": "Arabic",
+  "settings_notifications": "Notifications",
+  "settings_version": "App Version",
+
+  "search_hint": "What are you looking for?",
+  "search_empty": "No results for \"{query}\"",
+  "@search_empty": {
+    "placeholders": {
+      "query": { "type": "String" }
+    }
+  },
+  "search_filters": "Filters",
+  "search_sort": "Sort By",
+  "search_sort_newest": "Newest",
+  "search_sort_price_asc": "Price: Low to High",
+  "search_sort_price_desc": "Price: High to Low",
+  "search_sort_rating": "Top Rated",
+  "search_sort_popular": "Most Popular",
+
+  "review_write": "Write a Review",
+  "review_title": "Review Title",
+  "review_body": "Your Review",
+  "review_submit": "Submit Review",
+  "review_no_reviews": "No reviews yet. Be the first!",
+  "review_rating_label": "{count} ratings",
+  "@review_rating_label": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
+}
