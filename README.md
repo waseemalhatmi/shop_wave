@@ -8,6 +8,33 @@
 
 ---
 
+## 📱 App Screenshots / لقطات من التطبيق
+
+<p align="center">
+  <table align="center">
+    <tr>
+      <td align="center"><img src="screenshots/01.jpeg" width="180"><br><sub>Splash & Welcome</sub></td>
+      <td align="center"><img src="screenshots/02.jpeg" width="180"><br><sub>Login & Authentication</sub></td>
+      <td align="center"><img src="screenshots/03.jpeg" width="180"><br><sub>Home Page (English)</sub></td>
+      <td align="center"><img src="screenshots/04.jpeg" width="180"><br><sub>Home Page (Arabic)</sub></td>
+    </tr>
+    <tr>
+      <td align="center"><img src="screenshots/05.jpeg" width="180"><br><sub>Categories (Arabic)</sub></td>
+      <td align="center"><img src="screenshots/06.jpeg" width="180"><br><sub>Product List</sub></td>
+      <td align="center"><img src="screenshots/07.jpeg" width="180"><br><sub>Product Detail</sub></td>
+      <td align="center"><img src="screenshots/08.jpeg" width="180"><br><sub>Shopping Cart (Arabic)</sub></td>
+    </tr>
+    <tr>
+      <td align="center"><img src="screenshots/09.jpeg" width="180"><br><sub>Favorites & Wishlist</sub></td>
+      <td align="center"><img src="screenshots/10.jpeg" width="180"><br><sub>User Profile (Arabic)</sub></td>
+      <td align="center"><img src="screenshots/11.jpeg" width="180"><br><sub>Theme & Language Settings</sub></td>
+      <td align="center">-</td>
+    </tr>
+  </table>
+</p>
+
+---
+
 ## ✨ Features
 
 - 🛍️ Complete shopping experience (browse → cart → checkout → track)
