@@ -186,6 +186,12 @@ class ProfileScreen extends ConsumerWidget {
                     ],
                   ),
                   const SizedBox(height: AppSpacing.md),
+                  // ── Admin Panel button (only for admins) ───────────
+                  if (user != null && user.isAdmin) ...
+                    [
+                      _AdminPanelButton(user: user),
+                      const SizedBox(height: AppSpacing.md),
+                    ],
                   // Sign Out
                   SizedBox(
                     width: double.infinity,
@@ -385,3 +391,43 @@ class _ProfileMenuItem extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       );
 }
+
+/// Admin panel button — only shown to admin/super_admin users.
+class _AdminPanelButton extends StatelessWidget {
+  const _AdminPanelButton({required this.user});
+  final dynamic user;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => context.go(AppRoutes.adminDashboard),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFF6C63FF), Color(0xFFFF6584)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [BoxShadow(color: const Color(0xFF6C63FF).withValues(alpha: 0.4), blurRadius: 12, offset: const Offset(0, 4))],
+        ),
+        child: Row(children: [
+          Container(
+            width: 44, height: 44,
+            decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(12)),
+            child: const Icon(Icons.admin_panel_settings_rounded, color: Colors.white, size: 24),
+          ),
+          const SizedBox(width: 14),
+          const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text('Admin Panel', style: TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.w800, fontSize: 16, color: Colors.white)),
+            Text('Manage your store', style: TextStyle(fontFamily: 'Outfit', fontSize: 12, color: Colors.white70)),
+          ])),
+          const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 16),
+        ]),
+      ),
+    );
+  }
+}
+

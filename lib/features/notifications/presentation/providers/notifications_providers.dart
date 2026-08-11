@@ -1,21 +1,18 @@
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/di/providers.dart';
 import '../../domain/entities/notification_entity.dart';
 import '../../domain/repositories/notifications_repository.dart';
 import '../../data/datasources/notifications_remote_data_source.dart';
 import '../../data/repositories/notifications_repository_impl.dart';
+import 'dart:async';
 
-part 'notifications_providers.g.dart';
-
-@riverpod
-NotificationsRepository notificationsRepository(NotificationsRepositoryRef ref) {
+final notificationsRepositoryProvider = Provider<NotificationsRepository>((ref) {
   final supabase = ref.watch(supabaseClientProvider);
   final remoteDataSource = NotificationsRemoteDataSourceImpl(supabase);
   return NotificationsRepositoryImpl(remoteDataSource);
-}
+});
 
-@riverpod
-class UserNotifications extends _$UserNotifications {
+class UserNotifications extends AsyncNotifier<List<NotificationEntity>> {
   @override
   Future<List<NotificationEntity>> build() async {
     final repository = ref.watch(notificationsRepositoryProvider);
@@ -48,3 +45,7 @@ class UserNotifications extends _$UserNotifications {
     );
   }
 }
+
+final userNotificationsProvider = AsyncNotifierProvider<UserNotifications, List<NotificationEntity>>(() {
+  return UserNotifications();
+});

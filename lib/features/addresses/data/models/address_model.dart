@@ -1,29 +1,97 @@
-// ignore_for_file: invalid_annotation_target
-import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../domain/entities/address_entity.dart';
 
-part 'address_model.freezed.dart';
-part 'address_model.g.dart';
+class AddressModel {
+  final String id;
+  final String userId;
+  final String? label;
+  final String fullName;
+  final String phone;
+  final String country;
+  final String city;
+  final String? district;
+  final String street;
+  final String? building;
+  final String? postalCode;
+  final bool isDefault;
 
-@freezed
-class AddressModel with _$AddressModel {
-  const factory AddressModel({
-    required String id,
-    @JsonKey(name: 'user_id') required String userId,
-    required String? label,
-    @JsonKey(name: 'full_name') required String fullName,
-    required String phone,
-    required String country,
-    required String city,
-    required String? district,
-    required String street,
-    required String? building,
-    @JsonKey(name: 'postal_code') required String? postalCode,
-    @JsonKey(name: 'is_default') required bool isDefault,
-  }) = _AddressModel;
+  const AddressModel({
+    required this.id,
+    required this.userId,
+    this.label,
+    required this.fullName,
+    required this.phone,
+    required this.country,
+    required this.city,
+    this.district,
+    required this.street,
+    this.building,
+    this.postalCode,
+    required this.isDefault,
+  });
 
-  factory AddressModel.fromJson(Map<String, dynamic> json) =>
-      _$AddressModelFromJson(json);
+  factory AddressModel.fromJson(Map<String, dynamic> json) {
+    return AddressModel(
+      id: json['id'] as String,
+      userId: json['user_id'] as String,
+      label: json['label'] as String?,
+      fullName: json['full_name'] as String,
+      phone: json['phone'] as String,
+      country: json['country'] as String,
+      city: json['city'] as String,
+      district: json['district'] as String?,
+      street: json['street'] as String,
+      building: json['building'] as String?,
+      postalCode: json['postal_code'] as String?,
+      isDefault: json['is_default'] as bool? ?? false,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'user_id': userId,
+      'label': label,
+      'full_name': fullName,
+      'phone': phone,
+      'country': country,
+      'city': city,
+      'district': district,
+      'street': street,
+      'building': building,
+      'postal_code': postalCode,
+      'is_default': isDefault,
+    };
+  }
+
+  AddressModel copyWith({
+    String? id,
+    String? userId,
+    String? label,
+    String? fullName,
+    String? phone,
+    String? country,
+    String? city,
+    String? district,
+    String? street,
+    String? building,
+    String? postalCode,
+    bool? isDefault,
+  }) {
+    return AddressModel(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      label: label ?? this.label,
+      fullName: fullName ?? this.fullName,
+      phone: phone ?? this.phone,
+      country: country ?? this.country,
+      city: city ?? this.city,
+      district: district ?? this.district,
+      street: street ?? this.street,
+      building: building ?? this.building,
+      postalCode: postalCode ?? this.postalCode,
+      isDefault: isDefault ?? this.isDefault,
+    );
+  }
 }
 
 extension AddressModelX on AddressModel {

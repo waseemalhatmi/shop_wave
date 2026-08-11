@@ -1,23 +1,20 @@
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'dart:async';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/di/providers.dart';
 import '../../../auth/presentation/providers/auth_notifier.dart';
 import '../../domain/repositories/profile_repository.dart';
 import '../../data/datasources/profile_remote_data_source.dart';
 import '../../data/repositories/profile_repository_impl.dart';
 
-part 'profile_providers.g.dart';
-
-@riverpod
-ProfileRepository profileRepository(ProfileRepositoryRef ref) {
+final profileRepositoryProvider = Provider<ProfileRepository>((ref) {
   final supabase = ref.watch(supabaseClientProvider);
   final remoteDataSource = ProfileRemoteDataSourceImpl(supabase);
   return ProfileRepositoryImpl(remoteDataSource);
-}
+});
 
-@riverpod
-class ProfileUpdate extends _$ProfileUpdate {
+class ProfileUpdateNotifier extends AsyncNotifier<void> {
   @override
-  AsyncValue<void> build() => const AsyncValue.data(null);
+  FutureOr<void> build() {}
 
   Future<void> updateProfile({
     required String fullName,
@@ -36,10 +33,11 @@ class ProfileUpdate extends _$ProfileUpdate {
       gender: gender,
     );
 
-    state = result.fold(
-      (failure) => AsyncValue.error(failure.message, StackTrace.current),
+    result.fold(
+      (failure) {
+        state = AsyncValue.error(failure.message, StackTrace.current);
+      },
       (_) {
-        // Update user entity in AuthNotifier
         final authState = ref.read(authNotifierProvider);
         if (authState is AuthAuthenticated) {
           final updatedUser = authState.user.copyWith(
@@ -49,8 +47,12 @@ class ProfileUpdate extends _$ProfileUpdate {
           );
           ref.read(authNotifierProvider.notifier).updateUser(updatedUser);
         }
-        return const AsyncValue.data(null);
+        state = const AsyncValue.data(null);
       },
     );
   }
 }
+
+final profileUpdateProvider = AsyncNotifierProvider<ProfileUpdateNotifier, void>(() {
+  return ProfileUpdateNotifier();
+});

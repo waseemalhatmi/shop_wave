@@ -1,4 +1,3 @@
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../../../../core/config/app_constants.dart';
@@ -7,22 +6,17 @@ import '../../../products/domain/entities/product_entity.dart';
 import '../../data/datasources/cart_local_data_source.dart';
 import '../../domain/entities/cart_entity.dart';
 
-part 'cart_notifier.g.dart';
-
-@riverpod
-CartLocalDataSource cartLocalDataSource(CartLocalDataSourceRef ref) {
+final cartLocalDataSourceProvider = Provider<CartLocalDataSource>((ref) {
   final box = Hive.box<dynamic>(AppConstants.cartBox);
   return CartLocalDataSourceImpl(box);
-}
+});
+
+final cartNotifierProvider = NotifierProvider<CartNotifier, CartEntity>(() {
+  return CartNotifier();
+});
 
 /// Cart state notifier — manages the shopping cart in memory and locally.
-///
-/// Architecture decisions:
-/// - Persisted via Hive Box to keep local cart state persistent across app sessions.
-/// - Uses pure CartEntity value objects — state is always immutable.
-/// - Cart items are keyed by (productId + variantId) for correct deduplication.
-@riverpod
-class CartNotifier extends _$CartNotifier {
+class CartNotifier extends Notifier<CartEntity> {
   @override
   CartEntity build() {
     final localDataSource = ref.watch(cartLocalDataSourceProvider);
@@ -136,17 +130,14 @@ class CartNotifier extends _$CartNotifier {
 
 // ── Derived providers ────────────────────────────────────────────────────────
 
-/// Total number of items in cart — used for badge on nav bar.
-@riverpod
-int cartItemCount(Ref ref) =>
-    ref.watch(cartNotifierProvider).totalItems;
+final cartItemCountProvider = Provider<int>((ref) {
+  return ref.watch(cartNotifierProvider).totalItems;
+});
 
-/// Whether a specific product is in the cart.
-@riverpod
-bool isInCart(Ref ref, String productId) =>
-    ref.watch(cartNotifierProvider).containsProduct(productId);
+final isInCartProvider = Provider.family<bool, String>((ref, productId) {
+  return ref.watch(cartNotifierProvider).containsProduct(productId);
+});
 
-/// Quantity of a specific product in cart.
-@riverpod
-int cartProductQuantity(Ref ref, String productId) =>
-    ref.watch(cartNotifierProvider).quantityOf(productId);
+final cartProductQuantityProvider = Provider.family<int, String>((ref, productId) {
+  return ref.watch(cartNotifierProvider).quantityOf(productId);
+});

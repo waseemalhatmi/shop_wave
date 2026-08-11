@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.shopwave.shop_wave"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {

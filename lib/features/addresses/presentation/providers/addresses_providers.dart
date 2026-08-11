@@ -1,21 +1,18 @@
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/di/providers.dart';
 import '../../domain/entities/address_entity.dart';
 import '../../domain/repositories/addresses_repository.dart';
 import '../../data/datasources/addresses_remote_data_source.dart';
 import '../../data/repositories/addresses_repository_impl.dart';
+import 'dart:async';
 
-part 'addresses_providers.g.dart';
-
-@riverpod
-AddressesRepository addressesRepository(AddressesRepositoryRef ref) {
+final addressesRepositoryProvider = Provider<AddressesRepository>((ref) {
   final supabase = ref.watch(supabaseClientProvider);
   final remoteDataSource = AddressesRemoteDataSourceImpl(supabase);
   return AddressesRepositoryImpl(remoteDataSource);
-}
+});
 
-@riverpod
-class UserAddresses extends _$UserAddresses {
+class UserAddresses extends AsyncNotifier<List<AddressEntity>> {
   @override
   Future<List<AddressEntity>> build() async {
     final repository = ref.watch(addressesRepositoryProvider);
@@ -94,3 +91,7 @@ class UserAddresses extends _$UserAddresses {
     });
   }
 }
+
+final userAddressesProvider = AsyncNotifierProvider<UserAddresses, List<AddressEntity>>(() {
+  return UserAddresses();
+});

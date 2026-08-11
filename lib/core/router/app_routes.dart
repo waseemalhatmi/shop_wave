@@ -1,7 +1,4 @@
-/// All route paths in the application — single source of truth.
-///
-/// Using an abstract class with constants prevents magic strings.
-/// Every navigation call uses these constants, never raw strings.
+﻿/// All route paths in the application — single source of truth.
 abstract final class AppRoutes {
   // ── Auth ───────────────────────────────────────────────────────
   static const String splash = '/';
@@ -42,22 +39,23 @@ abstract final class AppRoutes {
   static const String reviews = '/product/:productId/reviews';
   static const String writeReview = '/product/:productId/review/write';
 
-  // ── Helpers to build paths with parameters ─────────────────────
-  static String productDetailPath(String productId) =>
-      '/product/$productId';
+  // ── Admin Panel ────────────────────────────────────────────────
+  static const String adminDashboard = '/admin';
+  static const String adminProducts = '/admin/products';
+  static const String adminProductForm = '/admin/products/form';
+  static const String adminCategories = '/admin/categories';
+  static const String adminOrders = '/admin/orders';
+  static const String adminOrderDetail = '/admin/orders/detail';
+  static const String adminUsers = '/admin/users';
+  static const String adminBanners = '/admin/banners';
+  static const String adminCoupons = '/admin/coupons';
+  static const String adminReviews = '/admin/reviews';
 
-  static String orderDetailPath(String orderId) =>
-      '/order/$orderId';
-
-  static String orderConfirmedPath(String orderId) =>
-      '/order-confirmed/$orderId';
-
-  static String editAddressPath(String addressId) =>
-      '/addresses/$addressId/edit';
-
-  static String reviewsPath(String productId) =>
-      '/product/$productId/reviews';
-
-  static String writeReviewPath(String productId) =>
-      '/product/$productId/review/write';
+  // ── Helpers ────────────────────────────────────────────────────
+  static String productDetailPath(String productId) => '/product/$productId';
+  static String orderDetailPath(String orderId) => '/order/$orderId';
+  static String orderConfirmedPath(String orderId) => '/order-confirmed/$orderId';
+  static String editAddressPath(String addressId) => '/addresses/$addressId/edit';
+  static String reviewsPath(String productId) => '/product/$productId/reviews';
+  static String writeReviewPath(String productId) => '/product/$productId/review/write';
 }

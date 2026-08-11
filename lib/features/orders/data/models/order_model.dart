@@ -1,31 +1,75 @@
-// ignore_for_file: invalid_annotation_target
-import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../domain/entities/order_entity.dart';
 import 'order_item_model.dart';
 
-part 'order_model.freezed.dart';
-part 'order_model.g.dart';
+class OrderModel {
+  final String id;
+  final String userId;
+  final String orderNumber;
+  final String status;
+  final String paymentMethod;
+  final double subtotal;
+  final double shippingCost;
+  final double tax;
+  final double total;
+  final Map<String, dynamic> shippingAddress;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final List<OrderItemModel> items;
 
-@freezed
-class OrderModel with _$OrderModel {
-  const factory OrderModel({
-    required String id,
-    @JsonKey(name: 'user_id') required String userId,
-    @JsonKey(name: 'order_number') required String orderNumber,
-    required String status,
-    @JsonKey(name: 'payment_method') required String paymentMethod,
-    required double subtotal,
-    @JsonKey(name: 'shipping_cost') required double shippingCost,
-    required double tax,
-    required double total,
-    @JsonKey(name: 'shipping_address') required Map<String, dynamic> shippingAddress,
-    @JsonKey(name: 'created_at') required DateTime createdAt,
-    @JsonKey(name: 'updated_at') required DateTime updatedAt,
-    @Default([]) List<OrderItemModel> items,
-  }) = _OrderModel;
+  const OrderModel({
+    required this.id,
+    required this.userId,
+    required this.orderNumber,
+    required this.status,
+    required this.paymentMethod,
+    required this.subtotal,
+    required this.shippingCost,
+    required this.tax,
+    required this.total,
+    required this.shippingAddress,
+    required this.createdAt,
+    required this.updatedAt,
+    this.items = const [],
+  });
 
-  factory OrderModel.fromJson(Map<String, dynamic> json) =>
-      _$OrderModelFromJson(json);
+  factory OrderModel.fromJson(Map<String, dynamic> json) {
+    return OrderModel(
+      id: json['id'] as String,
+      userId: json['user_id'] as String,
+      orderNumber: json['order_number'] as String,
+      status: json['status'] as String,
+      paymentMethod: json['payment_method'] as String,
+      subtotal: (json['subtotal'] as num).toDouble(),
+      shippingCost: (json['shipping_cost'] as num).toDouble(),
+      tax: (json['tax'] as num).toDouble(),
+      total: (json['total'] as num).toDouble(),
+      shippingAddress: json['shipping_address'] as Map<String, dynamic>,
+      createdAt: DateTime.parse(json['created_at'] as String),
+      updatedAt: DateTime.parse(json['updated_at'] as String),
+      items: (json['items'] as List<dynamic>?)
+              ?.map((e) => OrderItemModel.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'user_id': userId,
+      'order_number': orderNumber,
+      'status': status,
+      'payment_method': paymentMethod,
+      'subtotal': subtotal,
+      'shipping_cost': shippingCost,
+      'tax': tax,
+      'total': total,
+      'shipping_address': shippingAddress,
+      'created_at': createdAt.toIso8601String(),
+      'updated_at': updatedAt.toIso8601String(),
+      'items': items.map((e) => e.toJson()).toList(),
+    };
+  }
 }
 
 extension OrderModelX on OrderModel {

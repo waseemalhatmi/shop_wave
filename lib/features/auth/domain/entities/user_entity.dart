@@ -1,12 +1,6 @@
-import 'package:equatable/equatable.dart';
+﻿import 'package:equatable/equatable.dart';
 
 /// Represents an authenticated user in the domain layer.
-///
-/// This is the domain entity — it contains ONLY what the business logic
-/// cares about. It has NO knowledge of Supabase, JSON, or HTTP.
-///
-/// Why Equatable? So we can compare two User objects by value (not reference),
-/// which is essential for Riverpod state equality checks.
 class UserEntity extends Equatable {
   const UserEntity({
     required this.id,
@@ -15,6 +9,7 @@ class UserEntity extends Equatable {
     this.avatarUrl,
     this.phone,
     this.createdAt,
+    this.role = 'customer',
   });
 
   final String id;
@@ -23,15 +18,15 @@ class UserEntity extends Equatable {
   final String? avatarUrl;
   final String? phone;
   final DateTime? createdAt;
+  final String role;
 
-  /// Whether the user has a complete profile.
   bool get hasProfile => fullName != null && fullName!.isNotEmpty;
+  bool get isAdmin => role == 'admin' || role == 'super_admin';
+  bool get isSuperAdmin => role == 'super_admin';
 
-  /// Returns the display name, falling back to email prefix.
   String get displayName =>
       (fullName != null && fullName!.isNotEmpty) ? fullName! : email.split('@').first;
 
-  /// Returns initials for the avatar placeholder (e.g. "Ahmed Saad" → "AS").
   String get initials {
     if (fullName == null || fullName!.isEmpty) return email[0].toUpperCase();
     final parts = fullName!.trim().split(' ');
@@ -48,6 +43,7 @@ class UserEntity extends Equatable {
     String? avatarUrl,
     String? phone,
     DateTime? createdAt,
+    String? role,
   }) =>
       UserEntity(
         id: id ?? this.id,
@@ -56,8 +52,9 @@ class UserEntity extends Equatable {
         avatarUrl: avatarUrl ?? this.avatarUrl,
         phone: phone ?? this.phone,
         createdAt: createdAt ?? this.createdAt,
+        role: role ?? this.role,
       );
 
   @override
-  List<Object?> get props => [id, email, fullName, avatarUrl, phone, createdAt];
+  List<Object?> get props => [id, email, fullName, avatarUrl, phone, createdAt, role];
 }

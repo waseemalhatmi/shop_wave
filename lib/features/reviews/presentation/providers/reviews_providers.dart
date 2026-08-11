@@ -1,33 +1,29 @@
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'dart:async';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/di/providers.dart';
 import '../../domain/entities/review_entity.dart';
 import '../../domain/repositories/reviews_repository.dart';
 import '../../data/datasources/reviews_remote_data_source.dart';
 import '../../data/repositories/reviews_repository_impl.dart';
 
-part 'reviews_providers.g.dart';
-
-@riverpod
-ReviewsRepository reviewsRepository(ReviewsRepositoryRef ref) {
+final reviewsRepositoryProvider = Provider<ReviewsRepository>((ref) {
   final supabase = ref.watch(supabaseClientProvider);
   final remoteDataSource = ReviewsRemoteDataSourceImpl(supabase);
   return ReviewsRepositoryImpl(remoteDataSource);
-}
+});
 
-@riverpod
-Future<List<ReviewEntity>> productReviews(ProductReviewsRef ref, String productId) async {
+final productReviewsProvider = FutureProvider.family<List<ReviewEntity>, String>((ref, productId) async {
   final repository = ref.watch(reviewsRepositoryProvider);
   final result = await repository.getProductReviews(productId);
   return result.fold<List<ReviewEntity>>(
     (failure) => throw Exception(failure.message),
     (reviews) => reviews,
   );
-}
+});
 
-@riverpod
-class AddReview extends _$AddReview {
+class AddReviewNotifier extends AsyncNotifier<void> {
   @override
-  AsyncValue<void> build() => const AsyncValue.data(null);
+  FutureOr<void> build() {}
 
   Future<void> submitReview({
     required String productId,
@@ -42,13 +38,18 @@ class AddReview extends _$AddReview {
       comment: comment,
     );
 
-    state = result.fold(
-      (failure) => AsyncValue.error(failure.message, StackTrace.current),
+    result.fold(
+      (failure) {
+        state = AsyncValue.error(failure.message, StackTrace.current);
+      },
       (_) {
-        // Refresh product reviews list
         ref.invalidate(productReviewsProvider(productId));
-        return const AsyncValue.data(null);
+        state = const AsyncValue.data(null);
       },
     );
   }
 }
+
+final addReviewProvider = AsyncNotifierProvider<AddReviewNotifier, void>(() {
+  return AddReviewNotifier();
+});

@@ -76,7 +76,7 @@ class HomeScreen extends ConsumerWidget {
               child: _ProductSection(
                 title: isAr ? '⚡ عروض سريعة' : '⚡ Flash Deals',
                 subtitle: isAr ? 'عروض لفترة محدودة' : 'Limited time offers',
-                provider: flashDealProductsProvider,
+                watch: (ref) => ref.watch(flashDealProductsProvider),
                 accentColor: AppColors.badge,
               ),
             ),
@@ -86,7 +86,7 @@ class HomeScreen extends ConsumerWidget {
               child: _ProductSection(
                 title: isAr ? '⭐ منتجات مميزة' : '⭐ Featured',
                 subtitle: isAr ? 'مختارة بعناية لأجلك' : 'Handpicked for you',
-                provider: featuredProductsProvider,
+                watch: (ref) => ref.watch(featuredProductsProvider),
               ),
             ),
 
@@ -95,7 +95,7 @@ class HomeScreen extends ConsumerWidget {
               child: _ProductSection(
                 title: isAr ? '🆕 وصل حديثاً' : '🆕 New Arrivals',
                 subtitle: isAr ? 'أحدث المنتجات' : 'Just dropped',
-                provider: newArrivalProductsProvider,
+                watch: (ref) => ref.watch(newArrivalProductsProvider),
               ),
             ),
 
@@ -505,18 +505,18 @@ class _ProductSection extends ConsumerWidget {
   const _ProductSection({
     required this.title,
     required this.subtitle,
-    required this.provider,
+    required this.watch,
     this.accentColor,
   });
 
   final String title;
   final String subtitle;
-  final AutoDisposeFutureProvider<List<ProductEntity>> provider;
+  final AsyncValue<List<ProductEntity>> Function(WidgetRef ref) watch;
   final Color? accentColor;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final productsAsync = ref.watch(provider);
+    final productsAsync = watch(ref);
 
     return productsAsync.when(
       loading: () => Padding(
@@ -547,7 +547,7 @@ class _ProductSection extends ConsumerWidget {
         padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
         child: AppErrorWidget(
           message: error.toString(),
-          onRetry: () => ref.invalidate(provider),
+          onRetry: () => watch(ref),
         ),
       ),
       data: (products) {

@@ -30,9 +30,10 @@ class AuthRemoteDataSource {
 
       final profile = await _supabase
           .from('profiles')
-          .select()
+          .select('id, full_name, avatar_url, phone, role')
           .eq('id', authUser.id)
           .maybeSingle();
+
 
       return UserDto.fromSupabase(
         authUser: authUser.toJson(),
@@ -64,9 +65,10 @@ class AuthRemoteDataSource {
 
       final profile = await _supabase
           .from('profiles')
-          .select()
+          .select('id, full_name, avatar_url, phone, role')
           .eq('id', response.user!.id)
           .maybeSingle();
+
 
       AppLogger.i('User signed in: ${response.user!.id}');
 

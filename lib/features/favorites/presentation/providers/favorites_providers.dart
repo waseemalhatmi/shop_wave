@@ -1,21 +1,18 @@
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/di/providers.dart';
 import '../../../products/domain/entities/product_entity.dart';
 import '../../domain/repositories/favorites_repository.dart';
 import '../../data/datasources/favorites_remote_data_source.dart';
 import '../../data/repositories/favorites_repository_impl.dart';
+import 'dart:async';
 
-part 'favorites_providers.g.dart';
-
-@riverpod
-FavoritesRepository favoritesRepository(FavoritesRepositoryRef ref) {
+final favoritesRepositoryProvider = Provider<FavoritesRepository>((ref) {
   final supabase = ref.watch(supabaseClientProvider);
   final remoteDataSource = FavoritesRemoteDataSourceImpl(supabase);
   return FavoritesRepositoryImpl(remoteDataSource);
-}
+});
 
-@riverpod
-class Favorites extends _$Favorites {
+class Favorites extends AsyncNotifier<List<ProductEntity>> {
   @override
   Future<List<ProductEntity>> build() async {
     final repository = ref.watch(favoritesRepositoryProvider);
@@ -59,8 +56,11 @@ class Favorites extends _$Favorites {
   }
 }
 
-@riverpod
-bool isFavorite(IsFavoriteRef ref, String productId) {
+final favoritesProvider = AsyncNotifierProvider<Favorites, List<ProductEntity>>(() {
+  return Favorites();
+});
+
+final isFavoriteProvider = Provider.family<bool, String>((ref, productId) {
   final favoritesAsync = ref.watch(favoritesProvider);
   return favoritesAsync.value?.any((p) => p.id == productId) ?? false;
-}
+});

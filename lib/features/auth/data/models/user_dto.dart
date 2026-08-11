@@ -1,16 +1,6 @@
-import '../../domain/entities/user_entity.dart';
+﻿import '../../domain/entities/user_entity.dart';
 
 /// Data Transfer Object for user data coming from Supabase.
-///
-/// Responsibilities:
-/// 1. Deserialize raw JSON from Supabase profiles table
-/// 2. Convert (map) to the domain [UserEntity]
-///
-/// Why a separate DTO instead of using UserEntity directly?
-/// - Domain entities must NOT know about JSON or network format
-/// - DTOs absorb API changes — if Supabase renames a field, only
-///   the DTO changes; the entity and use cases stay untouched
-/// - Follows the Adapter/Translator pattern
 class UserDto {
   const UserDto({
     required this.id,
@@ -19,6 +9,7 @@ class UserDto {
     this.avatarUrl,
     this.phone,
     this.createdAt,
+    this.role = 'customer',
   });
 
   final String id;
@@ -27,6 +18,7 @@ class UserDto {
   final String? avatarUrl;
   final String? phone;
   final String? createdAt;
+  final String role;
 
   /// Creates a [UserDto] by combining Supabase auth user and profile data.
   factory UserDto.fromSupabase({
@@ -44,6 +36,7 @@ class UserDto {
                 as String?,
         phone: profile?['phone'] as String?,
         createdAt: authUser['created_at'] as String?,
+        role: profile?['role'] as String? ?? 'customer',
       );
 
   /// Converts this DTO to the domain [UserEntity].
@@ -54,5 +47,6 @@ class UserDto {
         avatarUrl: avatarUrl,
         phone: phone,
         createdAt: createdAt != null ? DateTime.tryParse(createdAt!) : null,
+        role: role,
       );
 }
