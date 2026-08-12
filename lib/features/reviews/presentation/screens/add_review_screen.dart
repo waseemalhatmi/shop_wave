@@ -86,8 +86,10 @@ class _AddReviewScreenState extends ConsumerState<AddReviewScreen> {
               const SizedBox(height: AppSpacing.sm),
               
               // Custom Rating Bar (Tappable Stars)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 8,
+                runSpacing: 8,
                 children: List.generate(5, (index) {
                   final starRating = index + 1;
                   final isSelected = starRating <= _selectedRating;
@@ -96,11 +98,11 @@ class _AddReviewScreenState extends ConsumerState<AddReviewScreen> {
                         ? null
                         : () => setState(() => _selectedRating = starRating),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
                       child: Icon(
                         isSelected ? Icons.star_rounded : Icons.star_border_rounded,
                         color: AppColors.star,
-                        size: 44,
+                        size: 40,
                       ),
                     ),
                   );

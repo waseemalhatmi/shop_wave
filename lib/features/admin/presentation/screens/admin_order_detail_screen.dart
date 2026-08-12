@@ -52,24 +52,23 @@ class _AdminOrderDetailScreenState extends ConsumerState<AdminOrderDetailScreen>
       body: ListView(padding: const EdgeInsets.all(20), children: [
         // Status Update
         _buildCard(isDark, isAr ? 'تحديث حالة الطلب' : 'Update Order Status', [
-          Row(children: _statuses.map((s) {
+          Wrap(spacing: 8, runSpacing: 8, children: _statuses.map((s) {
             final selected = _status == s;
-            return Expanded(child: GestureDetector(
+            return GestureDetector(
               onTap: () => setState(() => _status = s),
               child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 2),
-                padding: const EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                 decoration: BoxDecoration(
                   color: selected ? _statusColor(s) : Colors.transparent,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: selected ? _statusColor(s) : Colors.grey.shade300),
                 ),
-                child: Column(children: [
+                child: Column(mainAxisSize: MainAxisSize.min, children: [
                   Icon(_statusIcon(s), color: selected ? Colors.white : Colors.grey, size: 18),
-                  Text(_localizeStatus(s, isAr), style: TextStyle(color: selected ? Colors.white : Colors.grey, fontSize: 9, fontFamily: 'Outfit', fontWeight: FontWeight.w600)),
+                  Text(_localizeStatus(s, isAr), style: TextStyle(color: selected ? Colors.white : Colors.grey, fontSize: 10, fontFamily: 'Outfit', fontWeight: FontWeight.w600)),
                 ]),
               ),
-            ));
+            );
           }).toList()),
           const SizedBox(height: 12),
           SizedBox(width: double.infinity, child: ElevatedButton.icon(

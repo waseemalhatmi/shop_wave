@@ -160,19 +160,22 @@ class ProductDto {
             .firstOrNull ??
         imageUrls.firstOrNull;
 
-    return ProductDto(
-      id: json['id'] as String,
-      nameEn: json['name_en'] as String,
-      nameAr: json['name_ar'] as String,
-      slug: json['slug'] as String,
-      descriptionEn: json['description_en'] as String?,
-      descriptionAr: json['description_ar'] as String?,
-      categoryId: json['category_id'] as String?,
-      brandId: json['brand_id'] as String?,
-      basePrice: (json['base_price'] as num).toDouble(),
-      finalPrice: (json['final_price'] as num?)?.toDouble() ??
-          (json['base_price'] as num).toDouble(),
-      discountPercent: (json['discount_percent'] as num?)?.toDouble() ?? 0,
+      final double base = (json['base_price'] as num).toDouble();
+      final double discount = (json['discount_percent'] as num?)?.toDouble() ?? 0;
+      final double calculatedFinalPrice = base * (1 - (discount / 100));
+
+      return ProductDto(
+        id: json['id'] as String,
+        nameEn: json['name_en'] as String,
+        nameAr: json['name_ar'] as String,
+        slug: json['slug'] as String,
+        descriptionEn: json['description_en'] as String?,
+        descriptionAr: json['description_ar'] as String?,
+        categoryId: json['category_id'] as String?,
+        brandId: json['brand_id'] as String?,
+        basePrice: base,
+        finalPrice: calculatedFinalPrice,
+        discountPercent: discount,
       avgRating: (json['avg_rating'] as num?)?.toDouble() ?? 0,
       reviewCount: (json['review_count'] as int?) ?? 0,
       soldCount: (json['sold_count'] as int?) ?? 0,

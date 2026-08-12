@@ -33,7 +33,7 @@ class AdminBannersScreen extends ConsumerWidget {
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   if (b['image_url'] != null)
                     ClipRRect(borderRadius: const BorderRadius.only(topLeft: Radius.circular(14), topRight: Radius.circular(14)),
-                      child: Image.network(b['image_url']!, width: double.infinity, height: 120, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(height: 120, color: AppColors.primaryLight, child: const Icon(Icons.image, color: AppColors.primary, size: 40)))),
+                      child: Image.network(b['image_url'] as String, width: double.infinity, height: 120, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(height: 120, color: AppColors.primaryLight, child: const Icon(Icons.image, color: AppColors.primary, size: 40)))),
                   Padding(padding: const EdgeInsets.all(12), child: Row(children: [
                     Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Text(b[isAr ? 'title_ar' : 'title_en'] as String? ?? (isAr ? 'بنر' : 'Banner'), style: const TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.w700)),

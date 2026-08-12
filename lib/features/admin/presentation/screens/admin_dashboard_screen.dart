@@ -75,9 +75,10 @@ class AdminDashboardScreen extends ConsumerWidget {
 
   Widget _buildStatsGrid(BuildContext context, Map<String, dynamic> stats, bool isDark, bool isAr) {
     return GridView.count(
-      crossAxisCount: MediaQuery.sizeOf(context).width > 600 ? 4 : 2,
+      crossAxisCount: MediaQuery.sizeOf(context).width > 800 ? 4 : (MediaQuery.sizeOf(context).width > 400 ? 2 : 2),
       shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
-      crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: 1.2,
+      crossAxisSpacing: 12, mainAxisSpacing: 12, 
+      childAspectRatio: MediaQuery.sizeOf(context).width > 800 ? 1.4 : (MediaQuery.sizeOf(context).width > 400 ? 1.2 : 1.05),
       children: [
         _StatCard(label: isAr ? 'إجمالي الأرباح' : 'Total Revenue', value: '${(stats['total_revenue'] as num?)?.toStringAsFixed(0) ?? '0'} ${isAr ? 'ر.س' : 'SAR'}', icon: Icons.attach_money_rounded, color: AppColors.success, isDark: isDark),
         _StatCard(label: isAr ? 'إجمالي الطلبات' : 'Total Orders', value: '${stats['total_orders'] ?? 0}', icon: Icons.receipt_long_rounded, color: AppColors.primary, isDark: isDark),

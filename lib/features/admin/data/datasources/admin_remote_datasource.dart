@@ -1,4 +1,4 @@
-﻿import 'dart:typed_data';
+import 'dart:typed_data';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/utils/app_logger.dart';
@@ -96,6 +96,11 @@ class AdminRemoteDataSource {
     String? search,
     String? categoryId,
     bool? isActive,
+    double? minPrice,
+    double? maxPrice,
+    bool? isFeatured,
+    bool? isNewArrival,
+    bool? isOnSale,
     int page = 0,
     int pageSize = 20,
   }) async {
@@ -109,6 +114,12 @@ class AdminRemoteDataSource {
 
       if (isActive != null) query = query.eq('is_active', isActive);
       if (categoryId != null) query = query.eq('category_id', categoryId);
+      if (isFeatured != null) query = query.eq('is_featured', isFeatured);
+      if (isNewArrival != null) query = query.eq('is_new_arrival', isNewArrival);
+      if (isOnSale != null) query = query.eq('is_on_sale', isOnSale);
+      if (minPrice != null) query = query.gte('base_price', minPrice);
+      if (maxPrice != null) query = query.lte('base_price', maxPrice);
+
       if (search != null && search.isNotEmpty) {
         query = query.or('name_en.ilike.%$search%,name_ar.ilike.%$search%');
       }
@@ -124,9 +135,12 @@ class AdminRemoteDataSource {
     }
   }
 
-  Future<Map<String, dynamic>> createProduct(Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>> createProduct(Map<String, dynamic> data, {List<Map<String, dynamic>>? variants}) async {
     try {
       final result = await _supabase.from('products').insert(data).select().single();
+      if (variants != null && variants.isNotEmpty) {
+        await _syncVariants(result['id'] as String, variants);
+      }
       return result as Map<String, dynamic>;
     } catch (e, st) {
       AppLogger.e('AdminDS.createProduct', error: e, stackTrace: st);
@@ -134,12 +148,73 @@ class AdminRemoteDataSource {
     }
   }
 
-  Future<void> updateProduct(String id, Map<String, dynamic> data) async {
+  Future<void> updateProduct(String id, Map<String, dynamic> data, {List<Map<String, dynamic>>? variants}) async {
     try {
       await _supabase.from('products').update(data).eq('id', id);
+      if (variants != null) {
+        await _syncVariants(id, variants);
+      }
     } catch (e, st) {
       AppLogger.e('AdminDS.updateProduct', error: e, stackTrace: st);
       throw ServerAppException('Failed to update product: $e');
+    }
+  }
+
+  Future<void> _syncVariants(String productId, List<Map<String, dynamic>> variants) async {
+    // Clean slate for existing variants
+    await _supabase.from('product_variants').delete().eq('product_id', productId);
+    
+    if (variants.isEmpty) return;
+
+    for (var v in variants) {
+      final variantRes = await _supabase.from('product_variants').insert({
+        'product_id': productId,
+        'sku': v['sku'],
+        'price': v['price'],
+        'stock': v['stock'],
+        'is_default': v['is_default'] ?? false,
+      }).select().single();
+      
+      final variantId = variantRes['id'];
+      
+      final attributes = v['attributes'] as Map<String, String>?;
+      if (attributes != null && attributes.isNotEmpty) {
+        for (var entry in attributes.entries) {
+          final attrName = entry.key.trim();
+          final attrVal = entry.value.trim();
+          if (attrName.isEmpty || attrVal.isEmpty) continue;
+          
+          // Find or create attribute
+          var attrRes = await _supabase.from('product_attributes').select('id').eq('name_en', attrName).maybeSingle();
+          String attrId;
+          if (attrRes == null) {
+            final newAttr = await _supabase.from('product_attributes').insert({'name_en': attrName, 'name_ar': attrName}).select('id').single();
+            attrId = newAttr['id'];
+          } else {
+            attrId = attrRes['id'];
+          }
+          
+          // Find or create value
+          var valRes = await _supabase.from('product_attribute_values').select('id').eq('attribute_id', attrId).eq('value_en', attrVal).maybeSingle();
+          String valueId;
+          if (valRes == null) {
+            final newVal = await _supabase.from('product_attribute_values').insert({
+              'attribute_id': attrId,
+              'value_en': attrVal,
+              'value_ar': attrVal,
+            }).select('id').single();
+            valueId = newVal['id'];
+          } else {
+            valueId = valRes['id'];
+          }
+          
+          // Link variant to value
+          await _supabase.from('variant_attribute_values').insert({
+            'variant_id': variantId,
+            'value_id': valueId,
+          });
+        }
+      }
     }
   }
 
@@ -160,7 +235,28 @@ class AdminRemoteDataSource {
       await _supabase.from('products').update({'is_active': isActive}).eq('id', id);
     } catch (e, st) {
       AppLogger.e('AdminDS.toggleProductActive', error: e, stackTrace: st);
-      throw const ServerAppException('Failed to toggle product status.');
+      throw ServerAppException('Failed to toggle product status: $e');
+    }
+  }
+
+  Future<void> bulkDeleteProducts(List<String> ids) async {
+    try {
+      await _supabase.from('products').update({
+        'deleted_at': DateTime.now().toIso8601String(),
+        'is_active': false,
+      }).inFilter('id', ids);
+    } catch (e, st) {
+      AppLogger.e('AdminDS.bulkDeleteProducts', error: e, stackTrace: st);
+      throw const ServerAppException('Failed to bulk delete products.');
+    }
+  }
+
+  Future<void> bulkUpdateProductsActive(List<String> ids, bool isActive) async {
+    try {
+      await _supabase.from('products').update({'is_active': isActive}).inFilter('id', ids);
+    } catch (e, st) {
+      AppLogger.e('AdminDS.bulkUpdateProductsActive', error: e, stackTrace: st);
+      throw const ServerAppException('Failed to bulk update products status.');
     }
   }
 
@@ -201,12 +297,41 @@ class AdminRemoteDataSource {
     try {
       final data = await _supabase
           .from('categories')
-          .select('id, name_en, name_ar, slug, image_url, is_active, sort_order, parent_id')
+          .select(
+            'id, name_en, name_ar, slug, image_url, is_active, sort_order, parent_id'
+          )
           .order('sort_order');
-      return List<Map<String, dynamic>>.from(data as List);
+      final categories = List<Map<String, dynamic>>.from(data as List);
+      
+      // Fetch product counts for each category in parallel
+      final counts = await Future.wait(
+        categories.map((c) => _supabase
+            .from('products')
+            .select('id')
+            .eq('category_id', c['id'] as String)
+            .count()),
+      );
+      
+      return List.generate(categories.length, (i) {
+        return {...categories[i], 'product_count': counts[i].count};
+      });
     } catch (e, st) {
       AppLogger.e('AdminDS.getAllCategories', error: e, stackTrace: st);
       throw const ServerAppException('Failed to load categories.');
+    }
+  }
+
+  Future<void> updateCategorySortOrder(List<Map<String, dynamic>> updates) async {
+    try {
+      await Future.wait(
+        updates.map((u) => _supabase
+            .from('categories')
+            .update({'sort_order': u['sort_order']})
+            .eq('id', u['id'] as String)),
+      );
+    } catch (e, st) {
+      AppLogger.e('AdminDS.updateCategorySortOrder', error: e, stackTrace: st);
+      throw const ServerAppException('Failed to update sort order.');
     }
   }
 
@@ -242,6 +367,8 @@ class AdminRemoteDataSource {
   Future<List<Map<String, dynamic>>> getAllOrders({
     String? status,
     String? search,
+    DateTime? dateFrom,
+    DateTime? dateTo,
     int page = 0,
     int pageSize = 20,
   }) async {
@@ -256,12 +383,31 @@ class AdminRemoteDataSource {
       if (search != null && search.isNotEmpty) {
         query = query.ilike('order_number', '%$search%');
       }
+      if (dateFrom != null) query = query.gte('created_at', dateFrom.toIso8601String());
+      if (dateTo != null) query = query.lte('created_at', dateTo.toIso8601String());
 
       final data = await query
           .order('created_at', ascending: false)
           .range(page * pageSize, (page + 1) * pageSize - 1);
 
-      return List<Map<String, dynamic>>.from(data as List);
+      final orders = List<Map<String, dynamic>>.from(data as List);
+      
+      // Fetch profiles manually to avoid foreign key cache issues
+      final userIds = orders.map((o) => o['user_id']?.toString()).whereType<String>().toSet().toList();
+      if (userIds.isNotEmpty) {
+        final profilesData = await _supabase.from('profiles').select('id, full_name, avatar_url').inFilter('id', userIds);
+        final profilesList = List<Map<String, dynamic>>.from(profilesData as List);
+        final profilesMap = {for (var p in profilesList) p['id'].toString(): p};
+        
+        for (var i = 0; i < orders.length; i++) {
+          final uid = orders[i]['user_id']?.toString();
+          if (uid != null && profilesMap.containsKey(uid)) {
+            orders[i]['profiles'] = profilesMap[uid];
+          }
+        }
+      }
+
+      return orders;
     } catch (e, st) {
       AppLogger.e('AdminDS.getAllOrders', error: e, stackTrace: st);
       throw const ServerAppException('Failed to load orders.');
@@ -281,6 +427,7 @@ class AdminRemoteDataSource {
 
   Future<List<Map<String, dynamic>>> getAllUsers({
     String? search,
+    String? role,
     int page = 0,
     int pageSize = 20,
   }) async {
@@ -290,6 +437,9 @@ class AdminRemoteDataSource {
       );
       if (search != null && search.isNotEmpty) {
         query = query.ilike('full_name', '%$search%');
+      }
+      if (role != null) {
+        query = query.eq('role', role);
       }
       final data = await query
           .order('created_at', ascending: false)
@@ -367,9 +517,10 @@ class AdminRemoteDataSource {
     }
   }
 
-  Future<void> createCoupon(Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>?> createCoupon(Map<String, dynamic> data) async {
     try {
-      await _supabase.from('coupons').insert(data);
+      final result = await _supabase.from('coupons').insert(data).select().single();
+      return result as Map<String, dynamic>;
     } catch (e, st) {
       AppLogger.e('AdminDS.createCoupon', error: e, stackTrace: st);
       throw ServerAppException('Failed to create coupon: $e');
@@ -396,14 +547,42 @@ class AdminRemoteDataSource {
 
   // ── Reviews ────────────────────────────────────────────────────────────
 
-  Future<List<Map<String, dynamic>>> getAllReviews({int page = 0, int pageSize = 20}) async {
+  Future<List<Map<String, dynamic>>> getAllReviews({
+    int page = 0,
+    int pageSize = 20,
+    int? minRating,
+    int? maxRating,
+  }) async {
     try {
-      final data = await _supabase
-          .from('reviews')
-          .select('id, product_id, user_id, rating, comment, created_at')
+      var query = _supabase.from('reviews').select(
+        'id, rating, comment, created_at, user_id, '
+        'products(id, name_en, name_ar)',
+      );
+      if (minRating != null) query = query.gte('rating', minRating);
+      if (maxRating != null) query = query.lte('rating', maxRating);
+      
+      final data = await query
           .order('created_at', ascending: false)
           .range(page * pageSize, (page + 1) * pageSize - 1);
-      return List<Map<String, dynamic>>.from(data as List);
+          
+      final reviews = List<Map<String, dynamic>>.from(data as List);
+      
+      // Fetch profiles manually
+      final userIds = reviews.map((r) => r['user_id']?.toString()).whereType<String>().toSet().toList();
+      if (userIds.isNotEmpty) {
+        final profilesData = await _supabase.from('profiles').select('id, full_name, avatar_url').inFilter('id', userIds);
+        final profilesList = List<Map<String, dynamic>>.from(profilesData as List);
+        final profilesMap = {for (var p in profilesList) p['id'].toString(): p};
+        
+        for (var i = 0; i < reviews.length; i++) {
+          final uid = reviews[i]['user_id']?.toString();
+          if (uid != null && profilesMap.containsKey(uid)) {
+            reviews[i]['profiles'] = profilesMap[uid];
+          }
+        }
+      }
+      
+      return reviews;
     } catch (e, st) {
       AppLogger.e('AdminDS.getAllReviews', error: e, stackTrace: st);
       throw const ServerAppException('Failed to load reviews.');

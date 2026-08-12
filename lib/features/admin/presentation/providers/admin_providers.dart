@@ -1,4 +1,4 @@
-﻿import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../data/datasources/admin_remote_datasource.dart';
 
@@ -24,50 +24,34 @@ final adminTopProductsProvider = FutureProvider<List<Map<String, dynamic>>>((ref
 
 // ── Products Providers ─────────────────────────────────────────────────────
 
-final adminProductsProvider = FutureProvider.family<List<Map<String, dynamic>>, Map<String, dynamic>>((ref, params) async {
-  return ref.read(adminDataSourceProvider).getAllProducts(
-    search: params['search'] as String?,
-    categoryId: params['categoryId'] as String?,
-    isActive: params['isActive'] as bool?,
-  );
-});
+// Now handled by admin_products_notifier.dart
+
 
 // ── Categories Provider ────────────────────────────────────────────────────
 
-final adminCategoriesProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
-  return ref.read(adminDataSourceProvider).getAllCategories();
-});
+// Now handled by admin_categories_notifier.dart
+
 
 // ── Orders Provider ────────────────────────────────────────────────────────
 
-final adminOrdersProvider = FutureProvider.family<List<Map<String, dynamic>>, Map<String, dynamic>>((ref, params) async {
-  return ref.read(adminDataSourceProvider).getAllOrders(
-    status: params['status'] as String?,
-    search: params['search'] as String?,
-    page: params['page'] as int? ?? 0,
-  );
-});
+// Now handled by admin_orders_notifier.dart
+
 
 // ── Users Provider ─────────────────────────────────────────────────────────
 
-final adminUsersProvider = FutureProvider.family<List<Map<String, dynamic>>, String>((ref, search) async {
-  return ref.read(adminDataSourceProvider).getAllUsers(search: search.isEmpty ? null : search);
-});
+// Now handled by admin_users_notifier.dart
 
-// ── Banners Provider ───────────────────────────────────────────────────────
+// ── Banners Provider ────────────────────────────────────────────────────────
 
 final adminBannersProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
   return ref.read(adminDataSourceProvider).getAllBanners();
 });
 
-// ── Coupons Provider ───────────────────────────────────────────────────────
+// ── Coupons Provider ────────────────────────────────────────────────────────
 
-final adminCouponsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
-  return ref.read(adminDataSourceProvider).getAllCoupons();
-});
+// Now handled by admin_coupons_notifier.dart
 
 // ── Reviews Provider ───────────────────────────────────────────────────────
 
-final adminReviewsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
-  return ref.read(adminDataSourceProvider).getAllReviews();
-});
+// Now handled by admin_reviews_notifier.dart
+

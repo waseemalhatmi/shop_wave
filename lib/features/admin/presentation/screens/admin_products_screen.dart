@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/router/app_routes.dart';
-import '../providers/admin_providers.dart';
+import '../providers/admin_products_notifier.dart';
 
 class AdminProductsScreen extends ConsumerStatefulWidget {
   const AdminProductsScreen({super.key});
@@ -14,24 +14,31 @@ class AdminProductsScreen extends ConsumerStatefulWidget {
 }
 
 class _AdminProductsScreenState extends ConsumerState<AdminProductsScreen> {
-  String _search = '';
-  bool? _isActive;
   final _searchCtrl = TextEditingController();
+  final _scrollCtrl = ScrollController();
 
-  Map<String, dynamic> get _params => {
-    'search': _search,
-    'isActive': _isActive,
-  };
+  @override
+  void initState() {
+    super.initState();
+    _scrollCtrl.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    if (_scrollCtrl.position.pixels >= _scrollCtrl.position.maxScrollExtent - 200) {
+      ref.read(adminProductsNotifierProvider.notifier).loadMore();
+    }
+  }
 
   @override
   void dispose() {
     _searchCtrl.dispose();
+    _scrollCtrl.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final productsAsync = ref.watch(adminProductsProvider(_params));
+    final stateAsync = ref.watch(adminProductsNotifierProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final isAr = Localizations.localeOf(context).languageCode == 'ar';
 
@@ -45,23 +52,49 @@ class _AdminProductsScreenState extends ConsumerState<AdminProductsScreen> {
       ),
       body: Column(
         children: [
-          // Header
-          Container(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(isAr ? 'إدارة المنتجات' : 'Products Management', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, fontFamily: 'Outfit', color: isDark ? AppColors.white : AppColors.onSurfaceLight)),
+          // Header / Bulk Actions Bar
+          if (stateAsync.value?.selectedIds.isNotEmpty == true)
+            Container(
+              padding: const EdgeInsets.all(20),
+              color: isDark ? AppColors.surfaceDark : AppColors.primaryLight,
+              child: Row(
+                children: [
+                  IconButton(icon: const Icon(Icons.close_rounded), onPressed: () => ref.read(adminProductsNotifierProvider.notifier).clearSelection()),
+                  Text('${stateAsync.value!.selectedIds.length} ${isAr ? 'محدد' : 'Selected'}', style: TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.w700, fontSize: 16, color: isDark ? AppColors.white : AppColors.onSurfaceLight)),
+                  const Spacer(),
+                  IconButton(icon: const Icon(Icons.check_circle_outline, color: AppColors.success), tooltip: isAr ? 'تنشيط' : 'Activate', onPressed: () => _confirmBulkAction(context, ref, true, isAr)),
+                  IconButton(icon: const Icon(Icons.cancel_outlined, color: Colors.orange), tooltip: isAr ? 'تعطيل' : 'Deactivate', onPressed: () => _confirmBulkAction(context, ref, false, isAr)),
+                  IconButton(icon: const Icon(Icons.delete_outline, color: AppColors.error), tooltip: isAr ? 'حذف' : 'Delete', onPressed: () => _confirmBulkDelete(context, ref, isAr)),
+                ],
+              ),
+            )
+          else
+            Container(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(child: Text(isAr ? 'إدارة المنتجات' : 'Products Management', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, fontFamily: 'Outfit', color: isDark ? AppColors.white : AppColors.onSurfaceLight))),
+                      IconButton(
+                        onPressed: () => _showFiltersBottomSheet(context, ref, stateAsync.value, isAr, isDark),
+                        icon: const Icon(Icons.tune_rounded, color: AppColors.primary),
+                        style: IconButton.styleFrom(backgroundColor: isDark ? AppColors.surfaceDark : AppColors.white),
+                      ),
+                    ],
+                  ),
                 const SizedBox(height: 16),
                 // Search
                 TextField(
                   controller: _searchCtrl,
-                  onChanged: (v) => setState(() => _search = v),
+                  onChanged: (v) => ref.read(adminProductsNotifierProvider.notifier).setSearch(v),
                   decoration: InputDecoration(
                     hintText: isAr ? 'ابحث عن منتجات...' : 'Search products...',
                     hintStyle: const TextStyle(fontFamily: 'Outfit'),
                     prefixIcon: const Icon(Icons.search_rounded, color: AppColors.primary),
-                    suffixIcon: _search.isNotEmpty ? IconButton(icon: const Icon(Icons.clear_rounded), onPressed: () { _searchCtrl.clear(); setState(() => _search = ''); }) : null,
+                    suffixIcon: _searchCtrl.text.isNotEmpty ? IconButton(icon: const Icon(Icons.clear_rounded), onPressed: () { _searchCtrl.clear(); ref.read(adminProductsNotifierProvider.notifier).setSearch(''); }) : null,
                     filled: true,
                     fillColor: isDark ? AppColors.surfaceDark : AppColors.white,
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
@@ -74,11 +107,11 @@ class _AdminProductsScreenState extends ConsumerState<AdminProductsScreen> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      _FilterChip(label: isAr ? 'الكل' : 'All', selected: _isActive == null, onTap: () => setState(() => _isActive = null)),
+                      _FilterChip(label: isAr ? 'الكل' : 'All', selected: stateAsync.value?.isActive == null, onTap: () => ref.read(adminProductsNotifierProvider.notifier).setFilter(null)),
                       const SizedBox(width: 8),
-                      _FilterChip(label: isAr ? 'نشط' : 'Active', selected: _isActive == true, onTap: () => setState(() => _isActive = true), color: AppColors.success),
+                      _FilterChip(label: isAr ? 'نشط' : 'Active', selected: stateAsync.value?.isActive == true, onTap: () => ref.read(adminProductsNotifierProvider.notifier).setFilter(true), color: AppColors.success),
                       const SizedBox(width: 8),
-                      _FilterChip(label: isAr ? 'غير نشط' : 'Inactive', selected: _isActive == false, onTap: () => setState(() => _isActive = false), color: AppColors.error),
+                      _FilterChip(label: isAr ? 'غير نشط' : 'Inactive', selected: stateAsync.value?.isActive == false, onTap: () => ref.read(adminProductsNotifierProvider.notifier).setFilter(false), color: AppColors.error),
                     ],
                   ),
                 ),
@@ -87,30 +120,43 @@ class _AdminProductsScreenState extends ConsumerState<AdminProductsScreen> {
           ),
           // Products list
           Expanded(
-            child: productsAsync.when(
-              data: (products) => products.isEmpty
+            child: stateAsync.when(
+              data: (state) => state.products.isEmpty
                   ? Center(child: Text(isAr ? 'لا توجد منتجات' : 'No products found', style: const TextStyle(fontFamily: 'Outfit', fontSize: 16)))
                   : ListView.builder(
+                      controller: _scrollCtrl,
                       padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
-                      itemCount: products.length,
-                      itemBuilder: (ctx, i) => _AdminProductTile(
-                        product: products[i],
-                        isDark: isDark,
-                        isAr: isAr,
-                        onEdit: () => context.push(AppRoutes.adminProductForm, extra: products[i]),
-                        onDelete: () => _confirmDelete(context, ref, products[i]['id'] as String, products[i]['name_en'] as String? ?? '', isAr),
-                        onToggle: (val) async {
-                          await ref.read(adminDataSourceProvider).toggleProductActive(products[i]['id'] as String, val);
-                          ref.invalidate(adminProductsProvider(_params));
-                        },
-                      ),
+                      itemCount: state.products.length + (state.isLoadingMore ? 1 : 0),
+                      itemBuilder: (ctx, i) {
+                        if (i == state.products.length) {
+                          return const Padding(padding: EdgeInsets.all(20), child: Center(child: CircularProgressIndicator(color: AppColors.primary)));
+                        }
+                        final product = state.products[i];
+                        return _AdminProductTile(
+                          product: product,
+                          isDark: isDark,
+                          isAr: isAr,
+                          isSelected: state.selectedIds.contains(product['id']),
+                          onSelect: () => ref.read(adminProductsNotifierProvider.notifier).toggleSelection(product['id'] as String),
+                          onQuickEdit: () => _showQuickEditDialog(context, ref, product, isAr),
+                          onEdit: () => context.push(AppRoutes.adminProductForm, extra: product),
+                          onDelete: () => _confirmDelete(context, ref, product['id'] as String, product['name_en'] as String? ?? '', isAr),
+                          onToggle: (val) async {
+                            try {
+                              await ref.read(adminProductsNotifierProvider.notifier).toggleActive(product['id'] as String, val);
+                            } catch (e) {
+                              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to update status', style: const TextStyle(fontFamily: 'Outfit')), backgroundColor: AppColors.error));
+                            }
+                          },
+                        );
+                      },
                     ),
               loading: () => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
               error: (e, _) => Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
                 const Icon(Icons.error_outline, color: AppColors.error, size: 48),
                 const SizedBox(height: 8),
                 Text('$e', style: const TextStyle(color: AppColors.error)),
-                TextButton(onPressed: () => ref.invalidate(adminProductsProvider(_params)), child: Text(isAr ? 'إعادة المحاولة' : 'Retry')),
+                TextButton(onPressed: () => ref.invalidate(adminProductsNotifierProvider), child: Text(isAr ? 'إعادة المحاولة' : 'Retry')),
               ])),
             ),
           ),
@@ -131,10 +177,153 @@ class _AdminProductsScreenState extends ConsumerState<AdminProductsScreen> {
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
             onPressed: () async {
               Navigator.pop(ctx);
-              await ref.read(adminDataSourceProvider).softDeleteProduct(id);
-              ref.invalidate(adminProductsProvider(_params));
+              try {
+                await ref.read(adminProductsNotifierProvider.notifier).deleteProduct(id);
+              } catch (e) {
+                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to delete product', style: const TextStyle(fontFamily: 'Outfit')), backgroundColor: AppColors.error));
+              }
             },
             child: Text(isAr ? 'حذف' : 'Delete', style: const TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+  void _confirmBulkAction(BuildContext context, WidgetRef ref, bool isActive, bool isAr) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(isAr ? 'تأكيد الإجراء' : 'Confirm Action', style: const TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.w700)),
+        content: Text(isAr ? 'هل أنت متأكد من ${isActive ? 'تنشيط' : 'تعطيل'} المنتجات المحددة؟' : 'Are you sure you want to ${isActive ? 'activate' : 'deactivate'} selected products?', style: const TextStyle(fontFamily: 'Outfit')),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(isAr ? 'إلغاء' : 'Cancel')),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              try {
+                await ref.read(adminProductsNotifierProvider.notifier).bulkToggleActive(isActive);
+              } catch (e) {
+                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to bulk update', style: const TextStyle(fontFamily: 'Outfit')), backgroundColor: AppColors.error));
+              }
+            },
+            child: Text(isAr ? 'تأكيد' : 'Confirm', style: const TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _confirmBulkDelete(BuildContext context, WidgetRef ref, bool isAr) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(isAr ? 'حذف المنتجات' : 'Delete Products', style: const TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.w700)),
+        content: Text(isAr ? 'هل أنت متأكد من حذف المنتجات المحددة؟ لا يمكن التراجع عن هذا.' : 'Are you sure you want to delete selected products? This action cannot be undone.', style: const TextStyle(fontFamily: 'Outfit')),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(isAr ? 'إلغاء' : 'Cancel')),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+            onPressed: () async {
+              Navigator.pop(ctx);
+              try {
+                await ref.read(adminProductsNotifierProvider.notifier).bulkDelete();
+              } catch (e) {
+                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to bulk delete', style: const TextStyle(fontFamily: 'Outfit')), backgroundColor: AppColors.error));
+              }
+            },
+            child: Text(isAr ? 'حذف' : 'Delete', style: const TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showFiltersBottomSheet(BuildContext context, WidgetRef ref, AdminProductsState? state, bool isAr, bool isDark) {
+    bool? localFeatured = state?.isFeatured;
+    bool? localSale = state?.isOnSale;
+    
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: isDark ? AppColors.backgroundDark : AppColors.backgroundLight,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setStateSheet) => Padding(
+          padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom, left: 24, right: 24, top: 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(isAr ? 'الفلترة المتقدمة' : 'Advanced Filters', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, fontFamily: 'Outfit')),
+              const SizedBox(height: 20),
+              SwitchListTile(
+                title: Text(isAr ? 'منتجات مميزة فقط' : 'Featured Only', style: const TextStyle(fontFamily: 'Outfit')),
+                value: localFeatured == true,
+                onChanged: (v) => setStateSheet(() => localFeatured = v ? true : null),
+                activeColor: AppColors.primary,
+              ),
+              SwitchListTile(
+                title: Text(isAr ? 'منتجات مخفضة فقط' : 'On Sale Only', style: const TextStyle(fontFamily: 'Outfit')),
+                value: localSale == true,
+                onChanged: (v) => setStateSheet(() => localSale = v ? true : null),
+                activeColor: AppColors.primary,
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                    ref.read(adminProductsNotifierProvider.notifier).applyAdvancedFilters(
+                      isFeatured: localFeatured,
+                      isOnSale: localSale,
+                    );
+                  },
+                  child: Text(isAr ? 'تطبيق الفلتر' : 'Apply Filters'),
+                ),
+              ),
+              const SizedBox(height: 24),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showQuickEditDialog(BuildContext context, WidgetRef ref, Map<String, dynamic> product, bool isAr) {
+    final priceCtrl = TextEditingController(text: product['base_price']?.toString() ?? '');
+    final discountCtrl = TextEditingController(text: product['discount_percent']?.toString() ?? '0');
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(isAr ? 'تعديل سريع: ${product['name_ar']}' : 'Quick Edit: ${product['name_en']}', style: const TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.w700, fontSize: 16)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(controller: priceCtrl, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: isAr ? 'السعر الأساسي' : 'Base Price')),
+            const SizedBox(height: 12),
+            TextField(controller: discountCtrl, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: isAr ? 'نسبة الخصم %' : 'Discount %')),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(isAr ? 'إلغاء' : 'Cancel')),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              try {
+                final double? p = double.tryParse(priceCtrl.text);
+                final double? d = double.tryParse(discountCtrl.text);
+                if (p != null) {
+                  final finalPrice = d != null && d > 0 ? p - (p * (d / 100)) : p;
+                  final data = {'base_price': p, 'discount_percent': d ?? 0, 'final_price': finalPrice};
+                  await ref.read(adminProductsNotifierProvider.notifier).updateProduct(product['id'] as String, data);
+                }
+              } catch (e) {
+                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error', style: const TextStyle(fontFamily: 'Outfit')), backgroundColor: AppColors.error));
+              }
+            },
+            child: Text(isAr ? 'حفظ' : 'Save'),
           ),
         ],
       ),
@@ -143,11 +332,14 @@ class _AdminProductsScreenState extends ConsumerState<AdminProductsScreen> {
 }
 
 class _AdminProductTile extends StatelessWidget {
-  const _AdminProductTile({required this.product, required this.isDark, required this.onEdit, required this.onDelete, required this.onToggle, required this.isAr});
+  const _AdminProductTile({required this.product, required this.isDark, required this.onEdit, required this.onToggle, required this.isAr, required this.isSelected, required this.onSelect, required this.onQuickEdit, required this.onDelete});
   final Map<String, dynamic> product;
   final bool isDark;
   final bool isAr;
+  final bool isSelected;
+  final VoidCallback onSelect;
   final VoidCallback onEdit;
+  final VoidCallback onQuickEdit;
   final VoidCallback onDelete;
   final void Function(bool) onToggle;
 
@@ -156,63 +348,124 @@ class _AdminProductTile extends StatelessWidget {
     final images = product['product_images'] as List? ?? [];
     final imgUrl = images.isNotEmpty ? (images.firstWhere((i) => i['is_primary'] == true, orElse: () => images.first)['url']?.toString()) : null;
     final isActive = product['is_active'] as bool? ?? false;
+    final isAr = Localizations.localeOf(context).languageCode == 'ar';
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.surfaceDark : AppColors.white,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [BoxShadow(color: AppColors.shadowLight, blurRadius: 6, offset: const Offset(0, 2))],
-      ),
-      child: Row(
-        children: [
-          // Image
-          ClipRRect(
-            borderRadius: const BorderRadius.only(topLeft: Radius.circular(14), bottomLeft: Radius.circular(14)),
-            child: imgUrl != null
-                ? CachedNetworkImage(imageUrl: imgUrl, width: 80, height: 80, fit: BoxFit.cover)
-                : Container(width: 80, height: 80, color: AppColors.primaryLight, child: const Icon(Icons.inventory_2_rounded, color: AppColors.primary, size: 32)),
-          ),
-          // Details
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+    return GestureDetector(
+      onLongPress: onSelect,
+      onTap: onSelect,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          color: isSelected ? (isDark ? AppColors.primary.withValues(alpha: 0.15) : AppColors.primaryLight) : (isDark ? AppColors.surfaceDark : AppColors.white),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [BoxShadow(color: isDark ? Colors.black26 : AppColors.shadowLight, blurRadius: 8, offset: const Offset(0, 3))],
+          border: isSelected ? Border.all(color: AppColors.primary, width: 1.5) : Border.all(color: Colors.transparent, width: 1.5),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Checkbox
+              SizedBox(
+                width: 32,
+                child: Checkbox(
+                  value: isSelected,
+                  onChanged: (v) => onSelect(),
+                  activeColor: AppColors.primary,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                ),
+              ),
+              // Image
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: imgUrl != null
+                    ? CachedNetworkImage(imageUrl: imgUrl, width: 65, height: 65, fit: BoxFit.cover, memCacheWidth: 150)
+                    : Container(width: 65, height: 65, color: AppColors.primaryLight, child: const Icon(Icons.inventory_2_rounded, color: AppColors.primary, size: 28)),
+              ),
+              const SizedBox(width: 12),
+              // Details
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text((product[isAr ? 'name_ar' : 'name_en'] as String?) ?? '', style: const TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.w700, fontSize: 14, height: 1.2), maxLines: 2, overflow: TextOverflow.ellipsis),
+                    const SizedBox(height: 4),
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 4,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        Builder(
+                          builder: (context) {
+                            final double base = double.tryParse(product['base_price'].toString()) ?? 0;
+                            final double discount = double.tryParse(product['discount_percent']?.toString() ?? '0') ?? 0;
+                            final double finalPrice = base * (1 - (discount / 100));
+                            
+                            return Text(
+                              '${finalPrice.toStringAsFixed(2)} ${isAr ? 'ر.س' : 'SAR'}', 
+                              style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w800, fontFamily: 'Outfit', fontSize: 13)
+                            );
+                          }
+                        ),
+                        if ((num.tryParse(product['discount_percent']?.toString() ?? '0') ?? 0) > 0)
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                            decoration: BoxDecoration(color: AppColors.error, borderRadius: BorderRadius.circular(6)),
+                            child: Text('-${product['discount_percent']}%', style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700, fontFamily: 'Outfit')),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text('${isAr ? 'رقم الصنف' : 'SKU'}: ${product['sku'] ?? (isAr ? 'غير متوفر' : 'N/A')} • ${isAr ? 'المبيعات' : 'Sold'}: ${product['sold_count'] ?? 0}', style: TextStyle(fontSize: 11, fontFamily: 'Outfit', color: isDark ? AppColors.onSurfaceVariantDark : AppColors.onSurfaceVariantLight), maxLines: 1, overflow: TextOverflow.ellipsis),
+                  ],
+                ),
+              ),
+              // Actions
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(product[isAr ? 'name_ar' : 'name_en'] ?? '', style: const TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.w700, fontSize: 13), maxLines: 1, overflow: TextOverflow.ellipsis),
-                  Text(product[isAr ? 'name_en' : 'name_ar'] ?? '', style: TextStyle(fontFamily: 'Outfit', fontSize: 11, color: isDark ? AppColors.onSurfaceVariantDark : AppColors.onSurfaceVariantLight), maxLines: 1, overflow: TextOverflow.ellipsis),
+                  Transform.scale(
+                    scale: 0.85,
+                    child: Switch(value: isActive, onChanged: onToggle, activeColor: AppColors.success, materialTapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                  ),
                   const SizedBox(height: 4),
                   Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text('${product['base_price'] ?? 0} ${isAr ? 'ر.س' : 'SAR'}', style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700, fontFamily: 'Outfit', fontSize: 13)),
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: isActive ? AppColors.successLight : AppColors.error.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(isActive ? (isAr ? 'نشط' : 'Active') : (isAr ? 'غير نشط' : 'Inactive'), style: TextStyle(color: isActive ? AppColors.success : AppColors.error, fontSize: 10, fontWeight: FontWeight.w700, fontFamily: 'Outfit')),
-                      ),
+                      _ActionButton(icon: Icons.bolt_rounded, color: Colors.orange, onTap: onQuickEdit),
+                      const SizedBox(width: 4),
+                      _ActionButton(icon: Icons.edit_rounded, color: AppColors.primary, onTap: onEdit),
                     ],
                   ),
-                  Text('${isAr ? 'رقم الصنف' : 'SKU'}: ${product['sku'] ?? (isAr ? 'غير متوفر' : 'N/A')} | ${isAr ? 'المبيعات' : 'Sold'}: ${product['sold_count'] ?? 0}', style: TextStyle(fontSize: 10, fontFamily: 'Outfit', color: isDark ? AppColors.onSurfaceVariantDark : AppColors.onSurfaceVariantLight)),
                 ],
               ),
-            ),
-          ),
-          // Actions
-          Column(
-            children: [
-              Switch(value: isActive, onChanged: onToggle, activeColor: AppColors.success, materialTapTargetSize: MaterialTapTargetSize.shrinkWrap),
-              IconButton(icon: const Icon(Icons.edit_rounded, size: 18), color: AppColors.primary, onPressed: onEdit, tooltip: isAr ? 'تعديل' : 'Edit', constraints: const BoxConstraints()),
-              IconButton(icon: const Icon(Icons.delete_rounded, size: 18), color: AppColors.error, onPressed: onDelete, tooltip: isAr ? 'حذف' : 'Delete', constraints: const BoxConstraints()),
-              const SizedBox(height: 4),
             ],
           ),
-          const SizedBox(width: 8),
-        ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ActionButton extends StatelessWidget {
+  const _ActionButton({required this.icon, required this.color, required this.onTap});
+  final IconData icon;
+  final Color color;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: const EdgeInsets.all(6),
+        decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
+        child: Icon(icon, size: 16, color: color),
       ),
     );
   }
