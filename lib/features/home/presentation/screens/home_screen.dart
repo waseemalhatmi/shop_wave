@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -43,6 +45,7 @@ class HomeScreen extends ConsumerWidget {
           isDark ? AppColors.backgroundDark : AppColors.backgroundLight,
       body: RefreshIndicator(
         color: AppColors.primary,
+        displacement: 60,
         onRefresh: () async {
           ref.invalidate(homeBannersProvider);
           ref.invalidate(homeCategoriesProvider);
@@ -50,8 +53,13 @@ class HomeScreen extends ConsumerWidget {
           ref.invalidate(newArrivalProductsProvider);
           ref.invalidate(flashDealProductsProvider);
           ref.invalidate(bestSellerProductsProvider);
+          // Allow brief visual feedback before re-fetch completes
+          await Future<void>.delayed(const Duration(milliseconds: 400));
         },
         child: CustomScrollView(
+          // Required so RefreshIndicator works even when content
+          // is shorter than the viewport (e.g. empty state).
+          physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
             // ── App Bar ──────────────────────────────────────────
             _HomeAppBar(userName: userName),
@@ -76,7 +84,10 @@ class HomeScreen extends ConsumerWidget {
               child: _ProductSection(
                 title: isAr ? '⚡ عروض سريعة' : '⚡ Flash Deals',
                 subtitle: isAr ? 'عروض لفترة محدودة' : 'Limited time offers',
-                watch: (ref) => ref.watch(flashDealProductsProvider),
+                watch: (r) => r.watch(flashDealProductsProvider),
+                onRetry: () => ref.invalidate(flashDealProductsProvider),
+                seeAllRoute: AppRoutes.productList,
+                seeAllExtra: const {'filter': 'flash_deals'},
                 accentColor: AppColors.badge,
               ),
             ),
@@ -86,7 +97,23 @@ class HomeScreen extends ConsumerWidget {
               child: _ProductSection(
                 title: isAr ? '⭐ منتجات مميزة' : '⭐ Featured',
                 subtitle: isAr ? 'مختارة بعناية لأجلك' : 'Handpicked for you',
-                watch: (ref) => ref.watch(featuredProductsProvider),
+                watch: (r) => r.watch(featuredProductsProvider),
+                onRetry: () => ref.invalidate(featuredProductsProvider),
+                seeAllRoute: AppRoutes.productList,
+                seeAllExtra: const {'filter': 'featured'},
+              ),
+            ),
+
+            // ── Best Sellers ──────────────────────────────────────
+            SliverToBoxAdapter(
+              child: _ProductSection(
+                title: isAr ? '🏆 الأكثر مبيعاً' : '🏆 Best Sellers',
+                subtitle: isAr ? 'الأعلى تقييماً ومبيعاً' : 'Top rated & sold',
+                watch: (r) => r.watch(bestSellerProductsProvider),
+                onRetry: () => ref.invalidate(bestSellerProductsProvider),
+                seeAllRoute: AppRoutes.productList,
+                seeAllExtra: const {'filter': 'best_sellers'},
+                accentColor: AppColors.warning,
               ),
             ),
 
@@ -95,7 +122,10 @@ class HomeScreen extends ConsumerWidget {
               child: _ProductSection(
                 title: isAr ? '🆕 وصل حديثاً' : '🆕 New Arrivals',
                 subtitle: isAr ? 'أحدث المنتجات' : 'Just dropped',
-                watch: (ref) => ref.watch(newArrivalProductsProvider),
+                watch: (r) => r.watch(newArrivalProductsProvider),
+                onRetry: () => ref.invalidate(newArrivalProductsProvider),
+                seeAllRoute: AppRoutes.productList,
+                seeAllExtra: const {'filter': 'new_arrivals'},
               ),
             ),
 
@@ -253,11 +283,27 @@ class _BannerSection extends ConsumerStatefulWidget {
 class _BannerSectionState extends ConsumerState<_BannerSection> {
   final _pageController = PageController(viewportFraction: 0.9);
   int _currentPage = 0;
+  Timer? _autoScrollTimer;
+  int _totalBanners = 0;
 
   @override
   void dispose() {
+    _autoScrollTimer?.cancel();
     _pageController.dispose();
     super.dispose();
+  }
+
+  void _startAutoScroll() {
+    _autoScrollTimer?.cancel();
+    _autoScrollTimer = Timer.periodic(const Duration(seconds: 4), (_) {
+      if (!mounted || _totalBanners < 2) return;
+      final nextPage = (_currentPage + 1) % _totalBanners;
+      _pageController.animateToPage(
+        nextPage,
+        duration: const Duration(milliseconds: 600),
+        curve: Curves.easeInOut,
+      );
+    });
   }
 
   @override
@@ -277,6 +323,11 @@ class _BannerSectionState extends ConsumerState<_BannerSection> {
       error: (_, __) => const SizedBox.shrink(),
       data: (banners) {
         if (banners.isEmpty) return const SizedBox.shrink();
+        // Start auto-scroll once banners are loaded
+        if (_totalBanners != banners.length) {
+          _totalBanners = banners.length;
+          WidgetsBinding.instance.addPostFrameCallback((_) => _startAutoScroll());
+        }
         return Column(
           children: [
             const SizedBox(height: AppSpacing.sm),
@@ -286,7 +337,12 @@ class _BannerSectionState extends ConsumerState<_BannerSection> {
                 controller: _pageController,
                 itemCount: banners.length,
                 onPageChanged: (i) => setState(() => _currentPage = i),
-                itemBuilder: (_, i) => _BannerCard(banner: banners[i]),
+                itemBuilder: (_, i) => GestureDetector(
+                  // Pause auto-scroll while user is swiping manually
+                  onPanDown: (_) => _autoScrollTimer?.cancel(),
+                  onPanEnd: (_) => _startAutoScroll(),
+                  child: _BannerCard(banner: banners[i]),
+                ),
               ),
             ),
             if (banners.length > 1) ...[
@@ -506,12 +562,23 @@ class _ProductSection extends ConsumerWidget {
     required this.title,
     required this.subtitle,
     required this.watch,
+    required this.onRetry,
+    required this.seeAllRoute,
+    this.seeAllExtra,
     this.accentColor,
   });
 
   final String title;
   final String subtitle;
-  final AsyncValue<List<ProductEntity>> Function(WidgetRef ref) watch;
+  /// Reads the provider state. Called on every rebuild via [ref.watch].
+  final AsyncValue<List<ProductEntity>> Function(WidgetRef) watch;
+  /// Called when the user taps "Retry" on an error state.
+  /// The caller is responsible for invalidating the correct provider.
+  final VoidCallback onRetry;
+  /// Route to navigate to when the user taps "See All".
+  final String seeAllRoute;
+  /// Optional extra payload forwarded to [seeAllRoute] via GoRouter.
+  final Object? seeAllExtra;
   final Color? accentColor;
 
   @override
@@ -543,14 +610,14 @@ class _ProductSection extends ConsumerWidget {
           ],
         ),
       ),
-      error: (error, _) => Padding(
+      error: (Object error, _) => Padding(
         padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
         child: AppErrorWidget(
           message: error.toString(),
-          onRetry: () => watch(ref),
+          onRetry: onRetry,
         ),
       ),
-      data: (products) {
+      data: (List<ProductEntity> products) {
         if (products.isEmpty) return const SizedBox.shrink();
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -560,7 +627,7 @@ class _ProductSection extends ConsumerWidget {
               title: title,
               subtitle: subtitle,
               accentColor: accentColor,
-              onSeeAll: () {},
+              onSeeAll: () => context.push(seeAllRoute, extra: seeAllExtra),
             ),
             SizedBox(
               height: 248,
@@ -573,7 +640,7 @@ class _ProductSection extends ConsumerWidget {
                 itemCount: products.length,
                 separatorBuilder: (_, __) =>
                     const SizedBox(width: AppSpacing.md),
-                itemBuilder: (_, i) => ProductCard(product: products[i]),
+                itemBuilder: (_, int i) => ProductCard(product: products[i]),
               ),
             ),
           ],
