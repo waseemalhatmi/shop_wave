@@ -18,5 +18,7 @@ abstract class OrdersRepository {
     required double total,
     required Map<String, dynamic> shippingAddress,
     required List<Map<String, dynamic>> items,
+    String? couponId,
+    double discountAmount = 0.0,
   });
 }

@@ -47,23 +47,28 @@ class CartScreen extends ConsumerWidget {
           ? _EmptyCartView()
           : Column(
               children: [
-                // ── Cart Items ──────────────────────────────────────
+                // ── Cart Items, Coupon & Summary ────────────────────
                 Expanded(
-                  child: ListView.separated(
+                  child: ListView(
                     padding: const EdgeInsets.symmetric(
                       horizontal: AppSpacing.screenHorizontal,
                       vertical: AppSpacing.sm,
                     ),
-                    itemCount: cart.items.length,
-                    separatorBuilder: (_, __) =>
-                        const SizedBox(height: AppSpacing.md),
-                    itemBuilder: (_, i) =>
-                        _CartItemCard(item: cart.items[i]),
+                    children: [
+                      ...cart.items.map(
+                        (item) => Padding(
+                          padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                          child: _CartItemCard(item: item),
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.sm),
+                      _CouponSection(cart: cart),
+                      const SizedBox(height: AppSpacing.sm),
+                      _OrderSummary(cart: cart),
+                      const SizedBox(height: AppSpacing.md),
+                    ],
                   ),
                 ),
-
-                // ── Order Summary ───────────────────────────────────
-                _OrderSummary(cart: cart),
               ],
             ),
 
@@ -351,6 +356,15 @@ class _OrderSummary extends StatelessWidget {
             label: context.l10n.cart_subtotal,
             value: '${cart.subtotal.toStringAsFixed(2)} ${context.l10n.general_sar}',
           ),
+          if (cart.discountAmount > 0)
+            _SummaryRow(
+              label: isAr
+                  ? 'الخصم (${cart.appliedCoupon?.code})'
+                  : 'Discount (${cart.appliedCoupon?.code})',
+              value: '-${cart.discountAmount.toStringAsFixed(2)} ${context.l10n.general_sar}',
+              valueColor: AppColors.success,
+              isBold: true,
+            ),
           _SummaryRow(
             label: context.l10n.cart_shipping,
             value: cart.shippingCost == 0
@@ -482,6 +496,239 @@ class _CheckoutBar extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+// ─── Coupon Section ───────────────────────────────────────────────────────────
+
+class _CouponSection extends ConsumerStatefulWidget {
+  const _CouponSection({required this.cart});
+  final CartEntity cart;
+
+  @override
+  ConsumerState<_CouponSection> createState() => _CouponSectionState();
+}
+
+class _CouponSectionState extends ConsumerState<_CouponSection> {
+  final _controller = TextEditingController();
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> _applyCoupon() async {
+    final code = _controller.text.trim();
+    if (code.isEmpty) return;
+
+    setState(() => _isLoading = true);
+    final isAr = Localizations.localeOf(context).languageCode == 'ar';
+    final result = await ref.read(cartNotifierProvider.notifier).applyCoupon(
+      code,
+      isAr: isAr,
+    );
+
+    if (!mounted) return;
+    setState(() => _isLoading = false);
+
+    result.fold(
+      (error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(error),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      },
+      (coupon) {
+        _controller.clear();
+        FocusScope.of(context).unfocus();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              isAr
+                  ? 'تم تفعيل كود الخصم "${coupon.code}" بنجاح! 🎉'
+                  : 'Coupon code "${coupon.code}" applied! 🎉',
+            ),
+            backgroundColor: AppColors.success,
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isAr = Localizations.localeOf(context).languageCode == 'ar';
+    final appliedCoupon = widget.cart.appliedCoupon;
+
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
+        borderRadius: BorderRadius.circular(16),
+        border: appliedCoupon != null
+            ? Border.all(
+                color: AppColors.success.withValues(alpha: 0.5),
+                width: 1.5,
+              )
+            : null,
+        boxShadow: [
+          BoxShadow(
+            color: isDark ? AppColors.shadowDark : AppColors.shadowLight,
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: appliedCoupon != null
+          ? Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.success.withValues(alpha: 0.15),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.local_offer_rounded,
+                    color: AppColors.success,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            appliedCoupon.code,
+                            style: const TextStyle(
+                              fontFamily: 'Outfit',
+                              fontWeight: FontWeight.w700,
+                              fontSize: 15,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.success,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              appliedCoupon.formattedDiscount(
+                                context.l10n.general_sar,
+                              ),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        isAr
+                            ? 'تم تطبيق خصم بقيمة ${widget.cart.discountAmount.toStringAsFixed(2)} ${context.l10n.general_sar}'
+                            : '${widget.cart.discountAmount.toStringAsFixed(2)} ${context.l10n.general_sar} discount applied',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: AppColors.success,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(
+                    Icons.close_rounded,
+                    color: AppColors.badge,
+                    size: 20,
+                  ),
+                  tooltip: isAr ? 'إزالة الكوبون' : 'Remove Coupon',
+                  onPressed: () {
+                    ref.read(cartNotifierProvider.notifier).removeCoupon();
+                  },
+                ),
+              ],
+            )
+          : Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    textCapitalization: TextCapitalization.characters,
+                    style: const TextStyle(
+                      fontFamily: 'Outfit',
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: isAr
+                          ? 'أدخل كود الخصم (مثال: SAVE20)'
+                          : 'Promo Code (e.g. SAVE20)',
+                      prefixIcon: const Icon(
+                        Icons.confirmation_number_outlined,
+                        size: 20,
+                      ),
+                      filled: true,
+                      fillColor: isDark
+                          ? AppColors.surfaceVariantDark.withValues(alpha: 0.5)
+                          : AppColors.surfaceVariantLight.withValues(alpha: 0.5),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.md,
+                        vertical: 10,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                SizedBox(
+                  height: 44,
+                  child: ElevatedButton(
+                    onPressed: _isLoading ? null : _applyCoupon,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.md,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: _isLoading
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : Text(
+                            isAr ? 'تطبيق' : 'Apply',
+                            style: const TextStyle(fontWeight: FontWeight.w700),
+                          ),
+                  ),
+                ),
+              ],
+            ),
     );
   }
 }

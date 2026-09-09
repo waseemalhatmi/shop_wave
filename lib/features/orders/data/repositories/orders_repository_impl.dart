@@ -44,6 +44,8 @@ class OrdersRepositoryImpl implements OrdersRepository {
     required double total,
     required Map<String, dynamic> shippingAddress,
     required List<Map<String, dynamic>> items,
+    String? couponId,
+    double discountAmount = 0.0,
   }) async {
     try {
       final orderModel = await remoteDataSource.createOrder(
@@ -54,6 +56,8 @@ class OrdersRepositoryImpl implements OrdersRepository {
         total: total,
         shippingAddress: shippingAddress,
         items: items,
+        couponId: couponId,
+        discountAmount: discountAmount,
       );
       return Right(orderModel.toDomain());
     } on ServerAppException catch (e) {

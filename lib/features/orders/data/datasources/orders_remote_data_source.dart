@@ -13,6 +13,8 @@ abstract class OrdersRemoteDataSource {
     required double total,
     required Map<String, dynamic> shippingAddress,
     required List<Map<String, dynamic>> items,
+    String? couponId,
+    double discountAmount = 0.0,
   });
 }
 
@@ -71,6 +73,8 @@ class OrdersRemoteDataSourceImpl implements OrdersRemoteDataSource {
     required double total,
     required Map<String, dynamic> shippingAddress,
     required List<Map<String, dynamic>> items,
+    String? couponId,
+    double discountAmount = 0.0,
   }) async {
     try {
       final userId = supabaseClient.auth.currentUser?.id;
@@ -79,7 +83,7 @@ class OrdersRemoteDataSourceImpl implements OrdersRemoteDataSource {
       }
 
       // Step 1: Create the order
-      final orderResponse = await supabaseClient.from('orders').insert({
+      final orderData = <String, dynamic>{
         'user_id': userId,
         'payment_method': paymentMethod,
         'subtotal': subtotal,
@@ -87,7 +91,17 @@ class OrdersRemoteDataSourceImpl implements OrdersRemoteDataSource {
         'tax': tax,
         'total': total,
         'shipping_address': shippingAddress,
-      }).select().single();
+      };
+
+      if (couponId != null) {
+        orderData['coupon_id'] = couponId;
+      }
+      if (discountAmount > 0) {
+        orderData['discount_amount'] = discountAmount;
+      }
+
+      final orderResponse =
+          await supabaseClient.from('orders').insert(orderData).select().single();
 
       final orderId = orderResponse['id'] as String;
 

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/extensions/context_ext.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../cart/domain/entities/cart_entity.dart';
 import '../../../cart/presentation/providers/cart_notifier.dart';
+import '../../../coupons/presentation/providers/coupons_providers.dart';
 import '../../../orders/presentation/providers/orders_providers.dart';
 
 /// Checkout screen — Phase 4.
@@ -189,6 +191,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       total: cart.total,
       shippingAddress: address,
       items: items,
+      couponId: cart.appliedCoupon?.id,
+      discountAmount: cart.discountAmount,
     );
 
     if (!mounted) return;
@@ -205,6 +209,11 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         );
       },
       (order) {
+        if (cart.appliedCoupon != null) {
+          ref
+              .read(couponsRepositoryProvider)
+              .recordCouponUsage(cart.appliedCoupon!.id);
+        }
         ref.read(cartNotifierProvider.notifier).clearCart();
         // Force refresh orders list so the new order shows up immediately
         ref.invalidate(userOrdersProvider);
@@ -385,6 +394,7 @@ class _OrderReview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isAr = Localizations.localeOf(context).languageCode == 'ar';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -410,16 +420,33 @@ class _OrderReview extends StatelessWidget {
           ),
         ),
         const Divider(height: AppSpacing.xl),
-        _ReviewRow(label: 'Subtotal', value: '\$${cart.subtotal.toStringAsFixed(2)}'),
         _ReviewRow(
-          label: 'Shipping',
-          value: cart.shippingCost == 0 ? 'Free 🎉' : '\$${cart.shippingCost.toStringAsFixed(2)}',
+          label: isAr ? 'المجموع الفرعي' : 'Subtotal',
+          value: '${cart.subtotal.toStringAsFixed(2)} ${context.l10n.general_sar}',
         ),
-        _ReviewRow(label: 'Tax (8%)', value: '\$${cart.tax.toStringAsFixed(2)}'),
+        if (cart.discountAmount > 0)
+          _ReviewRow(
+            label: isAr
+                ? 'الخصم (${cart.appliedCoupon?.code})'
+                : 'Discount (${cart.appliedCoupon?.code})',
+            value: '-${cart.discountAmount.toStringAsFixed(2)} ${context.l10n.general_sar}',
+            color: AppColors.success,
+            isBold: true,
+          ),
+        _ReviewRow(
+          label: isAr ? 'الشحن' : 'Shipping',
+          value: cart.shippingCost == 0
+              ? (isAr ? 'مجاني 🎉' : 'Free 🎉')
+              : '${cart.shippingCost.toStringAsFixed(2)} ${context.l10n.general_sar}',
+        ),
+        _ReviewRow(
+          label: isAr ? 'الضريبة (8%)' : 'Tax (8%)',
+          value: '${cart.tax.toStringAsFixed(2)} ${context.l10n.general_sar}',
+        ),
         const Divider(height: AppSpacing.lg),
         _ReviewRow(
-          label: 'Total',
-          value: '\$${cart.total.toStringAsFixed(2)}',
+          label: isAr ? 'الإجمالي النهائي' : 'Total',
+          value: '${cart.total.toStringAsFixed(2)} ${context.l10n.general_sar}',
           isBold: true,
           color: AppColors.primary,
         ),

@@ -1,7 +1,10 @@
+import 'package:dartz/dartz.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../../../../core/config/app_constants.dart';
 import '../../../../core/utils/app_logger.dart';
+import '../../../coupons/domain/entities/coupon_entity.dart';
+import '../../../coupons/presentation/providers/coupons_providers.dart';
 import '../../../products/domain/entities/product_entity.dart';
 import '../../data/datasources/cart_local_data_source.dart';
 import '../../domain/entities/cart_entity.dart';
@@ -95,6 +98,35 @@ class CartNotifier extends Notifier<CartEntity> {
       return;
     }
     _updateItem(existing.copyWith(quantity: existing.quantity - 1));
+  }
+
+  // ── Coupon Management ──────────────────────────────────────────────────
+
+  Future<Either<String, CouponEntity>> applyCoupon(String code, {bool isAr = false}) async {
+    if (state.isEmpty) {
+      return Left(isAr ? 'السلة فارغة' : 'Your cart is empty');
+    }
+
+    final repository = ref.read(couponsRepositoryProvider);
+    final result = await repository.validateCoupon(
+      code: code,
+      subtotal: state.subtotal,
+      isAr: isAr,
+    );
+
+    return result.fold(
+      (failure) => Left(failure.message),
+      (coupon) {
+        state = state.copyWith(appliedCoupon: coupon);
+        AppLogger.i('Cart: applied coupon ${coupon.code}');
+        return Right(coupon);
+      },
+    );
+  }
+
+  void removeCoupon() {
+    state = state.copyWith(clearCoupon: true);
+    AppLogger.i('Cart: removed coupon');
   }
 
   // ── Clear ────────────────────────────────────────────────────────────────

@@ -1,3 +1,4 @@
+import '../../../coupons/domain/entities/coupon_entity.dart';
 import '../../../products/domain/entities/product_entity.dart';
 
 /// A single item in the shopping cart.
@@ -43,21 +44,32 @@ class CartItemEntity {
 
 /// The full cart state — computed properties, no mutation logic here.
 class CartEntity {
-  const CartEntity({this.items = const []});
+  const CartEntity({
+    this.items = const [],
+    this.appliedCoupon,
+  });
 
   final List<CartItemEntity> items;
+  final CouponEntity? appliedCoupon;
 
   bool get isEmpty => items.isEmpty;
   int get totalItems => items.fold(0, (sum, i) => sum + i.quantity);
   double get subtotal => items.fold(0.0, (sum, i) => sum + i.subtotal);
 
+  double get discountAmount =>
+      appliedCoupon != null ? appliedCoupon!.calculateDiscount(subtotal) : 0.0;
+
+  double get subtotalAfterDiscount =>
+      (subtotal - discountAmount).clamp(0.0, double.infinity);
+
   // Shipping: free over $100, else $9.99
-  double get shippingCost => subtotal >= 100 ? 0 : 9.99;
+  double get shippingCost =>
+      items.isEmpty || subtotalAfterDiscount >= 100 ? 0 : 9.99;
 
   // Tax 8%
-  double get tax => subtotal * 0.08;
+  double get tax => subtotalAfterDiscount * 0.08;
 
-  double get total => subtotal + shippingCost + tax;
+  double get total => subtotalAfterDiscount + shippingCost + tax;
 
   bool containsProduct(String productId) =>
       items.any((i) => i.product.id == productId);
@@ -66,6 +78,14 @@ class CartEntity {
       .where((i) => i.product.id == productId)
       .fold(0, (sum, i) => sum + i.quantity);
 
-  CartEntity copyWith({List<CartItemEntity>? items}) =>
-      CartEntity(items: items ?? this.items);
+  CartEntity copyWith({
+    List<CartItemEntity>? items,
+    CouponEntity? appliedCoupon,
+    bool clearCoupon = false,
+  }) =>
+      CartEntity(
+        items: items ?? this.items,
+        appliedCoupon:
+            clearCoupon ? null : (appliedCoupon ?? this.appliedCoupon),
+      );
 }
