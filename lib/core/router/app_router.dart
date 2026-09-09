@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/addresses/domain/entities/address_entity.dart';
@@ -93,9 +93,15 @@ final class AppRouter {
       GoRoute(path: AppRoutes.reviews, name: 'reviews', builder: (_, state) => ReviewsScreen(productId: state.pathParameters['productId']!)),
       GoRoute(path: AppRoutes.writeReview, name: 'writeReview', builder: (_, state) => AddReviewScreen(productId: state.pathParameters['productId']!)),
       GoRoute(path: AppRoutes.productList, name: 'productList', builder: (_, state) {
-        final categoryId = state.uri.queryParameters['categoryId'];
-        final title = state.uri.queryParameters['title'] ?? 'Products';
-        return ProductListScreen(categoryId: categoryId, title: title);
+        final extraMap = state.extra is Map<String, dynamic> ? state.extra as Map<String, dynamic> : null;
+        final categoryId = extraMap?['categoryId'] as String? ?? state.uri.queryParameters['categoryId'];
+        final filter = extraMap?['filter'] as String? ?? state.uri.queryParameters['filter'];
+        final title = extraMap?['title'] as String? ?? state.uri.queryParameters['title'] ?? 'Products';
+        return ProductListScreen(
+          categoryId: categoryId,
+          filter: filter,
+          title: title,
+        );
       }),
       GoRoute(path: AppRoutes.search, name: 'search', builder: (_, __) => const SearchScreen()),
 

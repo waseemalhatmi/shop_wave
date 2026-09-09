@@ -87,7 +87,10 @@ class HomeScreen extends ConsumerWidget {
                 watch: (r) => r.watch(flashDealProductsProvider),
                 onRetry: () => ref.invalidate(flashDealProductsProvider),
                 seeAllRoute: AppRoutes.productList,
-                seeAllExtra: const {'filter': 'flash_deals'},
+                seeAllExtra: {
+                  'filter': 'flash_deals',
+                  'title': isAr ? 'عروض سريعة' : 'Flash Deals',
+                },
                 accentColor: AppColors.badge,
               ),
             ),
@@ -100,7 +103,10 @@ class HomeScreen extends ConsumerWidget {
                 watch: (r) => r.watch(featuredProductsProvider),
                 onRetry: () => ref.invalidate(featuredProductsProvider),
                 seeAllRoute: AppRoutes.productList,
-                seeAllExtra: const {'filter': 'featured'},
+                seeAllExtra: {
+                  'filter': 'featured',
+                  'title': isAr ? 'منتجات مميزة' : 'Featured Products',
+                },
               ),
             ),
 
@@ -112,7 +118,10 @@ class HomeScreen extends ConsumerWidget {
                 watch: (r) => r.watch(bestSellerProductsProvider),
                 onRetry: () => ref.invalidate(bestSellerProductsProvider),
                 seeAllRoute: AppRoutes.productList,
-                seeAllExtra: const {'filter': 'best_sellers'},
+                seeAllExtra: {
+                  'filter': 'best_sellers',
+                  'title': isAr ? 'الأكثر مبيعاً' : 'Best Sellers',
+                },
                 accentColor: AppColors.warning,
               ),
             ),
@@ -125,7 +134,10 @@ class HomeScreen extends ConsumerWidget {
                 watch: (r) => r.watch(newArrivalProductsProvider),
                 onRetry: () => ref.invalidate(newArrivalProductsProvider),
                 seeAllRoute: AppRoutes.productList,
-                seeAllExtra: const {'filter': 'new_arrivals'},
+                seeAllExtra: {
+                  'filter': 'new_arrivals',
+                  'title': isAr ? 'وصل حديثاً' : 'New Arrivals',
+                },
               ),
             ),
 

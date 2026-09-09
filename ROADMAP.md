@@ -113,4 +113,19 @@ Phase 8: [ ] Not Started  — Testing & Production release
 
 ---
 
+## 10 Professional Enhancements Track
+
+- [x] **Step 1: Full Product Catalog & Dynamic Filtering** — Category filtering, section filtering (Flash Deals, Featured, Best Sellers, New Arrivals), interactive price range & rating sliders, sorting, and active filter pills.
+- [ ] **Step 2: Advanced Supabase Search & Search History** — Full-text search with debounce, recent searches local cache, and search suggestions.
+- [ ] **Step 3: Coupon & Promo Code System** — Discount validation and application in Cart and Checkout with Supabase backend sync.
+- [ ] **Step 4: Saved Shipping Addresses Selection in Checkout** — 1-click saved address picker, default address preselection, and inline new address creation.
+- [ ] **Step 5: Variant Tracking in Order Details** — Persist selected product variants (Color, Size, SKU) in `order_items` and show in order receipts.
+- [ ] **Step 6: Realtime Order Tracking & Actions** — Supabase Realtime stream for live status updates, order cancellation, and 1-tap re-order.
+- [ ] **Step 7: Dynamic Profile Statistics & Account Security** — Real counts for Orders/Wishlist/Reviews, change password, and support screens.
+- [ ] **Step 8: Complete Dual-Language Localization (Ar/En)** — 100% Arabic & English coverage with full RTL/LTR across all screens and dialogues.
+- [ ] **Step 9: Micro-animations, Lottie & Haptic Feedback** — Engaging empty states, order confirmation animations, and tactile feedback.
+- [ ] **Step 10: Automated Testing Suite & CI/CD Pipeline** — Unit & notifier tests with mocktail, plus GitHub Actions CI workflow.
+
+---
+
 *Update this file as phases complete.*
