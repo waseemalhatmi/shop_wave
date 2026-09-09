@@ -32,6 +32,29 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
   int _selectedImageIndex = 0;
   int _quantity = 1;
 
+  String _selectedColor = 'Midnight Black';
+  String _selectedSize = 'M';
+
+  static const _colorOptions = [
+    ('Midnight Black', 'أسود ليلي', Color(0xFF1E1E24), 'BLK'),
+    ('Ocean Navy', 'كحلي بحري', Color(0xFF1B3B6F), 'NVY'),
+    ('Silver Mist', 'فضي ناصع', Color(0xFFC0C0C0), 'SLV'),
+    ('Rose Gold', 'ذهبي وردي', Color(0xFFB76E79), 'RSG'),
+    ('Emerald Green', 'أخضر زمردي', Color(0xFF097969), 'EMR'),
+  ];
+
+  static const _sizeOptions = ['S', 'M', 'L', 'XL', 'XXL'];
+
+  String _buildSku(ProductEntity product) {
+    final base = product.sku ??
+        'SW-${product.id.replaceAll('-', '').substring(0, 6).toUpperCase()}';
+    final colorCode = _colorOptions
+        .firstWhere((c) => c.$1 == _selectedColor,
+            orElse: () => _colorOptions.first)
+        .$4;
+    return '$base-$colorCode-$_selectedSize';
+  }
+
   @override
   void initState() {
     super.initState();
@@ -348,6 +371,154 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
 
                     const Divider(height: AppSpacing.xl),
 
+                    // ── Color Variant Selector ──────────────────────────────
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          locale == 'ar' ? 'اللون:' : 'Color:',
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        Text(
+                          locale == 'ar'
+                              ? _colorOptions
+                                  .firstWhere((c) => c.$1 == _selectedColor,
+                                      orElse: () => _colorOptions.first)
+                                  .$2
+                              : _selectedColor,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: theme.colorScheme.primary,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    Row(
+                      children: _colorOptions.map((opt) {
+                        final (nameEn, nameAr, colorVal, _) = opt;
+                        final isSelected = _selectedColor == nameEn;
+                        return GestureDetector(
+                          onTap: () => setState(() => _selectedColor = nameEn),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            margin: const EdgeInsets.only(right: 10),
+                            width: 38,
+                            height: 38,
+                            decoration: BoxDecoration(
+                              color: colorVal,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: isSelected
+                                    ? AppColors.primary
+                                    : (isDark
+                                        ? AppColors.borderDark
+                                        : Colors.grey.shade300),
+                                width: isSelected ? 3.0 : 1.5,
+                              ),
+                              boxShadow: isSelected
+                                  ? [
+                                      BoxShadow(
+                                        color: AppColors.primary
+                                            .withValues(alpha: 0.35),
+                                        blurRadius: 8,
+                                        spreadRadius: 1,
+                                      )
+                                    ]
+                                  : null,
+                            ),
+                            child: isSelected
+                                ? Icon(
+                                    Icons.check_rounded,
+                                    size: 20,
+                                    color: colorVal.computeLuminance() > 0.5
+                                        ? Colors.black
+                                        : Colors.white,
+                                  )
+                                : null,
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+
+                    // ── Size Variant Selector ───────────────────────────────
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          locale == 'ar' ? 'المقاس:' : 'Size:',
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primaryContainer
+                                .withValues(alpha: 0.5),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            'SKU: ${_buildSku(product)}',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontFamily: 'Outfit',
+                              fontWeight: FontWeight.w700,
+                              color: theme.colorScheme.primary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    Row(
+                      children: _sizeOptions.map((sz) {
+                        final isSelected = _selectedSize == sz;
+                        return GestureDetector(
+                          onTap: () => setState(() => _selectedSize = sz),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            margin: const EdgeInsets.only(right: 8),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? AppColors.primary
+                                  : (isDark
+                                      ? AppColors.surfaceVariantDark
+                                      : AppColors.surfaceVariantLight),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: isSelected
+                                    ? AppColors.primary
+                                    : (isDark
+                                        ? AppColors.borderDark
+                                        : Colors.grey.shade300),
+                                width: isSelected ? 2.0 : 1.0,
+                              ),
+                            ),
+                            child: Text(
+                              sz,
+                              style: TextStyle(
+                                fontFamily: 'Outfit',
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13,
+                                color: isSelected
+                                    ? Colors.white
+                                    : theme.colorScheme.onSurface,
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    const Divider(height: AppSpacing.xl),
+
                     // Quantity selector
                     Row(
                       children: [
@@ -448,10 +619,24 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
 
   void _addToCart(ProductEntity product) {
     final isAr = Localizations.localeOf(context).languageCode == 'ar';
+    final sku = _buildSku(product);
+    final colorAr = _colorOptions
+        .firstWhere((c) => c.$1 == _selectedColor,
+            orElse: () => _colorOptions.first)
+        .$2;
+    final variantLabel = isAr
+        ? 'اللون: $colorAr | المقاس: $_selectedSize'
+        : 'Color: $_selectedColor | Size: $_selectedSize';
+
     ref.read(cartNotifierProvider.notifier).addItem(
-      product: product,
-      quantity: _quantity,
-    );
+          product: product,
+          quantity: _quantity,
+          variantId: '${product.id}-$_selectedColor-$_selectedSize',
+          variantLabel: variantLabel,
+          color: isAr ? colorAr : _selectedColor,
+          size: _selectedSize,
+          sku: sku,
+        );
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

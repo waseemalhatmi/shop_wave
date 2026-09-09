@@ -94,7 +94,7 @@ class ProductsRemoteDataSource {
           .eq('id', id)
           .single();
 
-      return ProductDto.fromJson(data as Map<String, dynamic>);
+      return ProductDto.fromJson(data);
     } catch (e, st) {
       AppLogger.e('ProductsRemoteDataSource.getProductById', error: e, stackTrace: st);
       throw const ServerAppException('Failed to load product details.');

@@ -15,6 +15,8 @@ class OrderModel {
   final DateTime createdAt;
   final DateTime updatedAt;
   final List<OrderItemModel> items;
+  final double discountAmount;
+  final String? couponId;
 
   const OrderModel({
     required this.id,
@@ -30,6 +32,8 @@ class OrderModel {
     required this.createdAt,
     required this.updatedAt,
     this.items = const [],
+    this.discountAmount = 0.0,
+    this.couponId,
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
@@ -50,6 +54,8 @@ class OrderModel {
               ?.map((e) => OrderItemModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
+      discountAmount: (json['discount_amount'] as num?)?.toDouble() ?? 0.0,
+      couponId: json['coupon_id'] as String?,
     );
   }
 
@@ -68,6 +74,8 @@ class OrderModel {
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
       'items': items.map((e) => e.toJson()).toList(),
+      'discount_amount': discountAmount,
+      if (couponId != null) 'coupon_id': couponId,
     };
   }
 }
@@ -87,6 +95,8 @@ extension OrderModelX on OrderModel {
         createdAt: createdAt,
         updatedAt: updatedAt,
         items: items.map((i) => i.toDomain()).toList(),
+        discountAmount: discountAmount,
+        couponId: couponId,
       );
 
   OrderStatus _mapStatus(String s) {

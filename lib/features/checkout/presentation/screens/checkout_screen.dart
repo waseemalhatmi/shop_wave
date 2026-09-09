@@ -408,11 +408,20 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     final cart = ref.read(cartNotifierProvider);
     final items = cart.items.map((e) => {
       'product_id': e.product.id,
-      'product_name_en': e.product.nameEn,
-      'product_name_ar': e.product.nameAr,
+      'product_name_en': e.variantLabel != null
+          ? '${e.product.nameEn} (${e.variantLabel})'
+          : e.product.nameEn,
+      'product_name_ar': e.variantLabel != null
+          ? '${e.product.nameAr} (${e.variantLabel})'
+          : e.product.nameAr,
       'product_image': e.product.primaryImageUrl,
       'quantity': e.quantity,
       'price_at_purchase': e.effectivePrice,
+      'variant_id': e.variantId,
+      'variant_label': e.variantLabel,
+      'color': e.color,
+      'size': e.size,
+      'sku': e.sku ?? e.product.sku,
     }).toList();
 
     final address = _buildShippingAddressMap(savedAddresses);
@@ -893,7 +902,6 @@ class _OrderReview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final isAr = Localizations.localeOf(context).languageCode == 'ar';
 
     return Column(
@@ -969,6 +977,22 @@ class _OrderReview extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
+                      if (item.hasVariant)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 2),
+                          child: Text(
+                            [
+                              if (item.color != null) item.color!,
+                              if (item.size != null) 'Size: ${item.size}',
+                              if (item.sku != null) 'SKU: ${item.sku}',
+                            ].join(' | '),
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
                       Text(
                         '${item.quantity} x ${item.effectivePrice.toStringAsFixed(2)} ${context.l10n.general_sar}',
                         style: TextStyle(

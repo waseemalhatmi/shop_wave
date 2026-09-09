@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 
+/// Domain entity representing an individual item within an order,
+/// including variant tracking (color, size, SKU) and immutable purchase price.
 class OrderItemEntity extends Equatable {
   const OrderItemEntity({
     required this.id,
@@ -11,6 +13,11 @@ class OrderItemEntity extends Equatable {
     required this.quantity,
     required this.priceAtPurchase,
     required this.createdAt,
+    this.variantId,
+    this.variantLabel,
+    this.color,
+    this.size,
+    this.sku,
   });
 
   final String id;
@@ -23,6 +30,31 @@ class OrderItemEntity extends Equatable {
   final double priceAtPurchase;
   final DateTime createdAt;
 
+  /// Product variant tracking properties
+  final String? variantId;
+  final String? variantLabel;
+  final String? color;
+  final String? size;
+  final String? sku;
+
+  /// Returns true if this item represents a specific product variant
+  bool get hasVariant =>
+      (variantLabel != null && variantLabel!.isNotEmpty) ||
+      (color != null && color!.isNotEmpty) ||
+      (size != null && size!.isNotEmpty);
+
+  /// Formatted variant description for display (e.g. "Color: Black / Size: L")
+  String? get displayVariant {
+    if (variantLabel != null && variantLabel!.isNotEmpty) {
+      return variantLabel;
+    }
+    final parts = [
+      if (color != null && color!.isNotEmpty) color!,
+      if (size != null && size!.isNotEmpty) size!,
+    ];
+    return parts.isEmpty ? null : parts.join(' / ');
+  }
+
   @override
   List<Object?> get props => [
         id,
@@ -34,5 +66,10 @@ class OrderItemEntity extends Equatable {
         quantity,
         priceAtPurchase,
         createdAt,
+        variantId,
+        variantLabel,
+        color,
+        size,
+        sku,
       ];
 }

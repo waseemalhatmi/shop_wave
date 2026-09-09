@@ -34,9 +34,12 @@ class CartNotifier extends Notifier<CartEntity> {
     int quantity = 1,
     String? variantId,
     String? variantLabel,
+    String? color,
+    String? size,
+    String? sku,
     double? unitPrice,
   }) {
-    final existing = _findItem(product.id, variantId);
+    final existing = _findItem(product.id, variantId, color, size);
 
     if (existing != null) {
       // Increment quantity if already in cart
@@ -50,20 +53,26 @@ class CartNotifier extends Notifier<CartEntity> {
         quantity: quantity,
         variantId: variantId,
         variantLabel: variantLabel,
+        color: color,
+        size: size,
+        sku: sku,
         unitPrice: unitPrice,
       );
       state = state.copyWith(items: [...state.items, newItem]);
-      AppLogger.i('Cart: added ${product.nameEn} x$quantity');
+      AppLogger.i('Cart: added ${product.nameEn} x$quantity (${variantLabel ?? 'default'})');
     }
     _saveToLocalStorage();
   }
 
   // ── Remove ───────────────────────────────────────────────────────────────
 
-  void removeItem(String productId, {String? variantId}) {
+  void removeItem(String productId, {String? variantId, String? color, String? size}) {
     state = state.copyWith(
       items: state.items
-          .where((i) => !(i.product.id == productId && i.variantId == variantId))
+          .where((i) => !(i.product.id == productId &&
+              i.variantId == variantId &&
+              (color == null || i.color == color) &&
+              (size == null || i.size == size)))
           .toList(),
     );
     AppLogger.i('Cart: removed product $productId');
@@ -72,29 +81,29 @@ class CartNotifier extends Notifier<CartEntity> {
 
   // ── Update Quantity ──────────────────────────────────────────────────────
 
-  void updateQuantity(String productId, int quantity, {String? variantId}) {
+  void updateQuantity(String productId, int quantity, {String? variantId, String? color, String? size}) {
     if (quantity <= 0) {
-      removeItem(productId, variantId: variantId);
+      removeItem(productId, variantId: variantId, color: color, size: size);
       return;
     }
-    final existing = _findItem(productId, variantId);
+    final existing = _findItem(productId, variantId, color, size);
     if (existing == null) return;
     _updateItem(existing.copyWith(quantity: quantity));
   }
 
   // ── Increment / Decrement ────────────────────────────────────────────────
 
-  void increment(String productId, {String? variantId}) {
-    final existing = _findItem(productId, variantId);
+  void increment(String productId, {String? variantId, String? color, String? size}) {
+    final existing = _findItem(productId, variantId, color, size);
     if (existing == null) return;
     _updateItem(existing.copyWith(quantity: existing.quantity + 1));
   }
 
-  void decrement(String productId, {String? variantId}) {
-    final existing = _findItem(productId, variantId);
+  void decrement(String productId, {String? variantId, String? color, String? size}) {
+    final existing = _findItem(productId, variantId, color, size);
     if (existing == null) return;
     if (existing.quantity <= 1) {
-      removeItem(productId, variantId: variantId);
+      removeItem(productId, variantId: variantId, color: color, size: size);
       return;
     }
     _updateItem(existing.copyWith(quantity: existing.quantity - 1));
@@ -139,16 +148,21 @@ class CartNotifier extends Notifier<CartEntity> {
 
   // ── Private Helpers ──────────────────────────────────────────────────────
 
-  CartItemEntity? _findItem(String productId, String? variantId) =>
+  CartItemEntity? _findItem(String productId, String? variantId, [String? color, String? size]) =>
       state.items.where(
-        (i) => i.product.id == productId && i.variantId == variantId,
+        (i) => i.product.id == productId &&
+            i.variantId == variantId &&
+            (color == null || i.color == color) &&
+            (size == null || i.size == size),
       ).firstOrNull;
 
   void _updateItem(CartItemEntity updated) {
     state = state.copyWith(
       items: state.items.map((i) {
         final matches = i.product.id == updated.product.id &&
-            i.variantId == updated.variantId;
+            i.variantId == updated.variantId &&
+            i.color == updated.color &&
+            i.size == updated.size;
         return matches ? updated : i;
       }).toList(),
     );

@@ -52,14 +52,40 @@ final recentSearchesProvider =
 
 // ─── Search Filter & Control Providers ────────────────────────────────────────
 
-final searchQueryProvider = StateProvider.autoDispose<String>((ref) => '');
+class SearchQueryNotifier extends Notifier<String> {
+  @override
+  String build() => '';
+
+  void setQuery(String value) => state = value;
+}
+
+final searchQueryProvider =
+    NotifierProvider<SearchQueryNotifier, String>(
+  SearchQueryNotifier.new,
+);
+
+class SearchCategoryNotifier extends Notifier<String?> {
+  @override
+  String? build() => null;
+
+  void setCategory(String? value) => state = value;
+}
 
 final searchSelectedCategoryProvider =
-    StateProvider.autoDispose<String?>((ref) => null);
+    NotifierProvider<SearchCategoryNotifier, String?>(
+  SearchCategoryNotifier.new,
+);
+
+class SearchSortNotifier extends Notifier<ProductSortOption> {
+  @override
+  ProductSortOption build() => ProductSortOption.newest;
+
+  void setSort(ProductSortOption value) => state = value;
+}
 
 final searchSortOptionProvider =
-    StateProvider.autoDispose<ProductSortOption>(
-  (ref) => ProductSortOption.newest,
+    NotifierProvider<SearchSortNotifier, ProductSortOption>(
+  SearchSortNotifier.new,
 );
 
 // ─── Search Results Provider ──────────────────────────────────────────────────

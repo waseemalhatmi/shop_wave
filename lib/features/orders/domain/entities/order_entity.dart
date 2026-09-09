@@ -18,6 +18,8 @@ class OrderEntity extends Equatable {
     required this.createdAt,
     required this.updatedAt,
     this.items = const [],
+    this.discountAmount = 0.0,
+    this.couponId,
   });
 
   final String id;
@@ -33,6 +35,8 @@ class OrderEntity extends Equatable {
   final DateTime createdAt;
   final DateTime updatedAt;
   final List<OrderItemEntity> items;
+  final double discountAmount;
+  final String? couponId;
 
   @override
   List<Object?> get props => [
@@ -49,5 +53,7 @@ class OrderEntity extends Equatable {
         createdAt,
         updatedAt,
         items,
+        discountAmount,
+        couponId,
       ];
 }

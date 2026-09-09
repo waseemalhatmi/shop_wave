@@ -51,6 +51,9 @@ class CartLocalDataSourceImpl implements CartLocalDataSource {
       variantId: map['variant_id'] as String?,
       variantLabel: map['variant_label'] as String?,
       unitPrice: (map['unit_price'] as num?)?.toDouble(),
+      color: map['color'] as String?,
+      size: map['size'] as String?,
+      sku: map['sku'] as String?,
     );
   }
 
@@ -61,6 +64,9 @@ class CartLocalDataSourceImpl implements CartLocalDataSource {
       'variant_id': item.variantId,
       'variant_label': item.variantLabel,
       'unit_price': item.unitPrice,
+      'color': item.color,
+      'size': item.size,
+      'sku': item.sku,
     };
   }
 

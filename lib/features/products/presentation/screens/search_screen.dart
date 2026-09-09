@@ -7,6 +7,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_error_widget.dart';
 import '../../../../core/widgets/product_card.dart';
 import '../../../../core/widgets/skeleton_loader.dart';
+import '../../../categories/domain/entities/category_entity.dart';
 import '../../../home/presentation/providers/home_providers.dart';
 import '../../../products/domain/repositories/products_repository.dart';
 import '../providers/search_providers.dart';
@@ -48,7 +49,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       const Duration(milliseconds: AppConstants.searchDebounceMs),
       () {
         final query = text.trim();
-        ref.read(searchQueryProvider.notifier).state = query;
+        ref.read(searchQueryProvider.notifier).setQuery(query);
         if (query.isNotEmpty) {
           ref.read(recentSearchesProvider.notifier).addQuery(query);
         }
@@ -64,7 +65,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     _controller.selection = TextSelection.fromPosition(
       TextPosition(offset: trimmed.length),
     );
-    ref.read(searchQueryProvider.notifier).state = trimmed;
+    ref.read(searchQueryProvider.notifier).setQuery(trimmed);
     if (trimmed.isNotEmpty) {
       ref.read(recentSearchesProvider.notifier).addQuery(trimmed);
     }
@@ -75,7 +76,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   void _clearSearch() {
     _debounceTimer?.cancel();
     _controller.clear();
-    ref.read(searchQueryProvider.notifier).state = '';
+    ref.read(searchQueryProvider.notifier).setQuery('');
     setState(() {});
   }
 
@@ -142,7 +143,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               categories: categories,
               selectedCategoryId: selectedCategoryId,
               onSelect: (catId) {
-                ref.read(searchSelectedCategoryProvider.notifier).state = catId;
+                ref.read(searchSelectedCategoryProvider.notifier).setCategory(catId);
               },
             ),
             orElse: () => const SizedBox.shrink(),
@@ -169,8 +170,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                       _SearchSortBar(
                         selected: selectedSort,
                         onChanged: (newSort) {
-                          ref.read(searchSortOptionProvider.notifier).state =
-                              newSort;
+                          ref.read(searchSortOptionProvider.notifier).setSort(
+                                newSort,
+                              );
                         },
                       ),
 
@@ -273,7 +275,7 @@ class _CategoryFilterBar extends StatelessWidget {
     required this.onSelect,
   });
 
-  final List<dynamic> categories;
+  final List<CategoryEntity> categories;
   final String? selectedCategoryId;
   final ValueChanged<String?> onSelect;
 
@@ -319,7 +321,7 @@ class _CategoryFilterBar extends StatelessWidget {
               isAr ? 'ar' : 'en',
             )),
             selected: isSelected,
-            onSelected: (_) => onSelect(category.id as String),
+            onSelected: (_) => onSelect(category.id),
             selectedColor: AppColors.primary,
             backgroundColor:
                 isDark ? AppColors.surfaceDark : AppColors.surfaceLight,

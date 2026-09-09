@@ -211,13 +211,69 @@ class _CartItemCard extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  item.localizedName(Localizations.localeOf(context).languageCode),
+                  item.product.localizedName(Localizations.localeOf(context).languageCode),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
+                if (item.hasVariant) ...[
+                  const SizedBox(height: 4),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 4,
+                    children: [
+                      if (item.color != null)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            item.color!,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: theme.colorScheme.primary,
+                            ),
+                          ),
+                        ),
+                      if (item.size != null)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: isDark ? AppColors.surfaceVariantDark : AppColors.surfaceVariantLight,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            'Size: ${item.size}',
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      if (item.sku != null)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: isDark ? AppColors.surfaceVariantDark.withValues(alpha: 0.5) : AppColors.surfaceVariantLight.withValues(alpha: 0.5),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            'SKU: ${item.sku}',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontFamily: 'Outfit',
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
                 const SizedBox(height: AppSpacing.xs),
                 Text(
                   '${item.effectivePrice.toStringAsFixed(2)} ${context.l10n.general_sar}',
@@ -233,7 +289,12 @@ class _CartItemCard extends ConsumerWidget {
                   children: [
                     _QtyButton(
                       icon: Icons.remove_rounded,
-                      onTap: () => notifier.decrement(item.product.id),
+                      onTap: () => notifier.decrement(
+                        item.product.id,
+                        variantId: item.variantId,
+                        color: item.color,
+                        size: item.size,
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(
@@ -250,7 +311,12 @@ class _CartItemCard extends ConsumerWidget {
                     ),
                     _QtyButton(
                       icon: Icons.add_rounded,
-                      onTap: () => notifier.increment(item.product.id),
+                      onTap: () => notifier.increment(
+                        item.product.id,
+                        variantId: item.variantId,
+                        color: item.color,
+                        size: item.size,
+                      ),
                     ),
                   ],
                 ),
@@ -267,7 +333,12 @@ class _CartItemCard extends ConsumerWidget {
                   color: AppColors.badge,
                   size: 20,
                 ),
-                onPressed: () => notifier.removeItem(item.product.id),
+                onPressed: () => notifier.removeItem(
+                  item.product.id,
+                  variantId: item.variantId,
+                  color: item.color,
+                  size: item.size,
+                ),
               ),
               Text(
                 '${item.subtotal.toStringAsFixed(2)} ${context.l10n.general_sar}',

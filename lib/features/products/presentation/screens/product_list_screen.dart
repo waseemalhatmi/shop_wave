@@ -6,7 +6,6 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_error_widget.dart';
 import '../../../../core/widgets/product_card.dart';
 import '../../../../core/widgets/skeleton_loader.dart';
-import '../../../products/domain/entities/product_entity.dart';
 import '../../../products/domain/repositories/products_repository.dart';
 import '../providers/products_providers.dart';
 

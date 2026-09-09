@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/extensions/context_ext.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../domain/entities/order_entity.dart';
@@ -313,6 +314,8 @@ class OrderDetailScreen extends ConsumerWidget {
   Widget _buildPaymentSummaryCard(BuildContext context, OrderEntity order) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final isRtl = Localizations.localeOf(context).languageCode == 'ar';
+    final sar = context.l10n.general_sar;
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
@@ -325,15 +328,28 @@ class OrderDetailScreen extends ConsumerWidget {
       ),
       child: Column(
         children: [
-          _Row(label: 'Payment Method', value: order.paymentMethod.toUpperCase()),
+          _Row(label: isRtl ? 'طريقة الدفع' : 'Payment Method', value: order.paymentMethod.toUpperCase()),
           const Divider(height: AppSpacing.lg),
-          _Row(label: 'Subtotal', value: '\$${order.subtotal.toStringAsFixed(2)}'),
-          _Row(label: 'Shipping', value: order.shippingCost == 0 ? 'Free' : '\$${order.shippingCost.toStringAsFixed(2)}'),
-          _Row(label: 'Tax', value: '\$${order.tax.toStringAsFixed(2)}'),
+          _Row(label: isRtl ? 'المجموع الفرعي' : 'Subtotal', value: '${order.subtotal.toStringAsFixed(2)} $sar'),
+          if (order.discountAmount > 0)
+            _Row(
+              label: isRtl ? 'الخصم' : 'Discount',
+              value: '-${order.discountAmount.toStringAsFixed(2)} $sar',
+              color: AppColors.success,
+              isBold: true,
+            ),
+          _Row(
+            label: isRtl ? 'الشحن' : 'Shipping',
+            value: order.shippingCost == 0
+                ? (isRtl ? 'مجاني 🎉' : 'Free 🎉')
+                : '${order.shippingCost.toStringAsFixed(2)} $sar',
+            color: order.shippingCost == 0 ? AppColors.success : null,
+          ),
+          _Row(label: isRtl ? 'الضريبة' : 'Tax', value: '${order.tax.toStringAsFixed(2)} $sar'),
           const Divider(height: AppSpacing.lg),
           _Row(
-            label: 'Total',
-            value: '\$${order.total.toStringAsFixed(2)}',
+            label: isRtl ? 'الإجمالي' : 'Total',
+            value: '${order.total.toStringAsFixed(2)} $sar',
             isBold: true,
             color: AppColors.primary,
           ),
@@ -364,17 +380,18 @@ class _OrderItemRow extends StatelessWidget {
         ),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: Image.network(
               item.productImage,
-              width: 50,
-              height: 50,
+              width: 56,
+              height: 56,
               fit: BoxFit.cover,
               errorBuilder: (_, __, ___) => Container(
-                width: 50,
-                height: 50,
+                width: 56,
+                height: 56,
                 color: Colors.grey.shade300,
                 child: const Icon(Icons.image_not_supported_outlined, size: 20),
               ),
@@ -391,14 +408,89 @@ class _OrderItemRow extends StatelessWidget {
                     fontFamily: 'Outfit',
                     fontWeight: FontWeight.w600,
                   ),
-                  maxLines: 1,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 2),
+                if (item.hasVariant || item.displayVariant != null) ...[
+                  const SizedBox(height: 3),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 3,
+                    children: [
+                      if (item.color != null)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            item.color!,
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              color: theme.colorScheme.primary,
+                            ),
+                          ),
+                        )
+                      else if (item.variantLabel != null)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            item.variantLabel!,
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              color: theme.colorScheme.primary,
+                            ),
+                          ),
+                        ),
+                      if (item.size != null)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
+                          decoration: BoxDecoration(
+                            color: isDark ? AppColors.surfaceVariantDark : AppColors.surfaceVariantLight,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            'Size: ${item.size}',
+                            style: const TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      if (item.sku != null)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? AppColors.surfaceVariantDark.withValues(alpha: 0.5)
+                                : AppColors.surfaceVariantLight.withValues(alpha: 0.5),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            'SKU: ${item.sku}',
+                            style: TextStyle(
+                              fontSize: 9,
+                              fontFamily: 'Outfit',
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+                const SizedBox(height: 3),
                 Text(
-                  'Qty: ${item.quantity}',
+                  '${isRtl ? 'الكمية' : 'Qty'}: ${item.quantity} × ${item.priceAtPurchase.toStringAsFixed(2)} ${context.l10n.general_sar}',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
+                    fontSize: 12,
                   ),
                 ),
               ],
@@ -406,10 +498,11 @@ class _OrderItemRow extends StatelessWidget {
           ),
           const SizedBox(width: AppSpacing.sm),
           Text(
-            '\$${(item.priceAtPurchase * item.quantity).toStringAsFixed(2)}',
+            '${(item.priceAtPurchase * item.quantity).toStringAsFixed(2)} ${context.l10n.general_sar}',
             style: const TextStyle(
               fontFamily: 'Outfit',
               fontWeight: FontWeight.w700,
+              fontSize: 14,
             ),
           ),
         ],

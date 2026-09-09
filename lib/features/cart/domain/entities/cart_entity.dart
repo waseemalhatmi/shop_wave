@@ -9,6 +9,9 @@ class CartItemEntity {
     this.variantId,
     this.variantLabel,
     this.unitPrice,
+    this.color,
+    this.size,
+    this.sku,
   });
 
   final ProductEntity product;
@@ -17,6 +20,9 @@ class CartItemEntity {
   /// Optional product variant (size, color, etc.)
   final String? variantId;
   final String? variantLabel;
+  final String? color;
+  final String? size;
+  final String? sku;
 
   /// Override price for variant — falls back to product.finalPrice
   final double? unitPrice;
@@ -32,13 +38,29 @@ class CartItemEntity {
           ? '${product.localizedName(langCode)} — $variantLabel'
           : product.localizedName(langCode);
 
-  CartItemEntity copyWith({int? quantity, String? variantId, String? variantLabel}) =>
+  bool get hasVariant =>
+      (variantLabel != null && variantLabel!.isNotEmpty) ||
+      (color != null && color!.isNotEmpty) ||
+      (size != null && size!.isNotEmpty);
+
+  CartItemEntity copyWith({
+    int? quantity,
+    String? variantId,
+    String? variantLabel,
+    String? color,
+    String? size,
+    String? sku,
+    double? unitPrice,
+  }) =>
       CartItemEntity(
         product: product,
         quantity: quantity ?? this.quantity,
         variantId: variantId ?? this.variantId,
         variantLabel: variantLabel ?? this.variantLabel,
-        unitPrice: unitPrice,
+        color: color ?? this.color,
+        size: size ?? this.size,
+        sku: sku ?? this.sku,
+        unitPrice: unitPrice ?? this.unitPrice,
       );
 }
 
