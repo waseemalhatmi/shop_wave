@@ -20,6 +20,7 @@ abstract final class AppConstants {
   static const String keyOnboardingDone = keyOnboardingSeen;
   static const String keyThemeMode = 'theme_mode';
   static const String keyLocale = 'locale';
+  static const String keyRecentSearches = 'recent_searches';
 
   // ── Timeouts ───────────────────────────────────────────────────
   static const Duration connectTimeout = Duration(seconds: 15);

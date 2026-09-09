@@ -36,6 +36,13 @@ class ProductsRemoteDataSource {
         query = query.eq('is_new_arrival', true);
       }
 
+      if (params.searchQuery != null && params.searchQuery!.trim().isNotEmpty) {
+        final q = params.searchQuery!.trim();
+        query = query.or(
+          'name_en.ilike.%$q%,name_ar.ilike.%$q%,description_en.ilike.%$q%,description_ar.ilike.%$q%,sku.ilike.%$q%',
+        );
+      }
+
       if (params.minPrice != null && params.minPrice! > 0) {
         query = query.gte('base_price', params.minPrice!);
       }
