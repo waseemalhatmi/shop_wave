@@ -118,7 +118,7 @@ Phase 8: [ ] Not Started  — Testing & Production release
 - [x] **Step 1: Full Product Catalog & Dynamic Filtering** — Category filtering, section filtering (Flash Deals, Featured, Best Sellers, New Arrivals), interactive price range & rating sliders, sorting, and active filter pills.
 - [x] **Step 2: Advanced Supabase Search & Search History** — Full-text search with debounce, recent searches local cache, and search suggestions.
 - [x] **Step 3: Coupon & Promo Code System** — Discount validation and application in Cart and Checkout with Supabase backend sync.
-- [ ] **Step 4: Saved Shipping Addresses Selection in Checkout** — 1-click saved address picker, default address preselection, and inline new address creation.
+- [x] **Step 4: Saved Shipping Addresses Selection in Checkout** — 1-click saved address picker, default address preselection, and inline new address creation.
 - [ ] **Step 5: Variant Tracking in Order Details** — Persist selected product variants (Color, Size, SKU) in `order_items` and show in order receipts.
 - [ ] **Step 6: Realtime Order Tracking & Actions** — Supabase Realtime stream for live status updates, order cancellation, and 1-tap re-order.
 - [ ] **Step 7: Dynamic Profile Statistics & Account Security** — Real counts for Orders/Wishlist/Reviews, change password, and support screens.
