@@ -20,6 +20,7 @@ class OrderEntity extends Equatable {
     this.items = const [],
     this.discountAmount = 0.0,
     this.couponId,
+    this.cancellationReason,
   });
 
   final String id;
@@ -37,6 +38,56 @@ class OrderEntity extends Equatable {
   final List<OrderItemEntity> items;
   final double discountAmount;
   final String? couponId;
+  final String? cancellationReason;
+
+  /// Whether customer can cancel this order (only pending or processing).
+  bool get canCancel =>
+      status == OrderStatus.pending || status == OrderStatus.processing;
+
+  bool get isCancelled => status == OrderStatus.cancelled;
+  bool get isDelivered => status == OrderStatus.delivered;
+
+  /// Total count of individual physical items in this order.
+  int get totalItemCount =>
+      items.fold<int>(0, (sum, item) => sum + item.quantity);
+
+  OrderEntity copyWith({
+    String? id,
+    String? userId,
+    String? orderNumber,
+    OrderStatus? status,
+    String? paymentMethod,
+    double? subtotal,
+    double? shippingCost,
+    double? tax,
+    double? total,
+    Map<String, dynamic>? shippingAddress,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    List<OrderItemEntity>? items,
+    double? discountAmount,
+    String? couponId,
+    String? cancellationReason,
+  }) {
+    return OrderEntity(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      orderNumber: orderNumber ?? this.orderNumber,
+      status: status ?? this.status,
+      paymentMethod: paymentMethod ?? this.paymentMethod,
+      subtotal: subtotal ?? this.subtotal,
+      shippingCost: shippingCost ?? this.shippingCost,
+      tax: tax ?? this.tax,
+      total: total ?? this.total,
+      shippingAddress: shippingAddress ?? this.shippingAddress,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      items: items ?? this.items,
+      discountAmount: discountAmount ?? this.discountAmount,
+      couponId: couponId ?? this.couponId,
+      cancellationReason: cancellationReason ?? this.cancellationReason,
+    );
+  }
 
   @override
   List<Object?> get props => [
@@ -55,5 +106,6 @@ class OrderEntity extends Equatable {
         items,
         discountAmount,
         couponId,
+        cancellationReason,
       ];
 }

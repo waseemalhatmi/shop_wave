@@ -35,12 +35,30 @@ class UserOrders extends AsyncNotifier<List<OrderEntity>> {
       );
     });
   }
+
+  /// Cancels an active order and refreshes state
+  Future<bool> cancelOrder(String orderId, {String? reason}) async {
+    final repository = ref.read(ordersRepositoryProvider);
+    final result = await repository.cancelOrder(orderId: orderId, reason: reason);
+    return result.fold(
+      (failure) => false,
+      (cancelledOrder) {
+        state = state.whenData((orders) {
+          return orders.map((o) => o.id == orderId ? cancelledOrder : o).toList();
+        });
+        ref.invalidate(orderDetailsProvider(orderId));
+        ref.invalidate(orderDetailsStreamProvider(orderId));
+        return true;
+      },
+    );
+  }
 }
 
 final userOrdersProvider = AsyncNotifierProvider<UserOrders, List<OrderEntity>>(() {
   return UserOrders();
 });
 
+/// Direct FutureProvider for initial / fallback loading
 final orderDetailsProvider = FutureProvider.family<OrderEntity, String>((ref, orderId) async {
   final repository = ref.watch(ordersRepositoryProvider);
   final result = await repository.getOrderDetails(orderId);
@@ -48,4 +66,73 @@ final orderDetailsProvider = FutureProvider.family<OrderEntity, String>((ref, or
     (failure) => throw Exception(failure.message),
     (order) => order,
   );
+});
+
+/// Live Supabase Realtime Stream for real-time order status tracking
+final orderDetailsStreamProvider =
+    StreamProvider.autoDispose.family<OrderEntity, String>((ref, orderId) {
+  final repository = ref.watch(ordersRepositoryProvider);
+  return repository.streamOrderDetails(orderId).map((result) {
+    return result.fold(
+      (failure) => throw Exception(failure.message),
+      (order) => order,
+    );
+  });
+});
+
+// ─── Status Filter Tab State ──────────────────────────────────────────────────
+
+enum OrderStatusFilter {
+  all,
+  active,
+  completed,
+  cancelled;
+
+  String label(bool isAr) {
+    switch (this) {
+      case OrderStatusFilter.all:
+        return isAr ? 'الكل' : 'All';
+      case OrderStatusFilter.active:
+        return isAr ? 'النشطة' : 'Active';
+      case OrderStatusFilter.completed:
+        return isAr ? 'المكتملة' : 'Completed';
+      case OrderStatusFilter.cancelled:
+        return isAr ? 'الملغاة' : 'Cancelled';
+    }
+  }
+}
+
+class OrderFilterNotifier extends Notifier<OrderStatusFilter> {
+  @override
+  OrderStatusFilter build() => OrderStatusFilter.all;
+
+  void setFilter(OrderStatusFilter filter) => state = filter;
+}
+
+final orderStatusFilterProvider =
+    NotifierProvider<OrderFilterNotifier, OrderStatusFilter>(
+  OrderFilterNotifier.new,
+);
+
+final filteredUserOrdersProvider = Provider<AsyncValue<List<OrderEntity>>>((ref) {
+  final ordersAsync = ref.watch(userOrdersProvider);
+  final filter = ref.watch(orderStatusFilterProvider);
+
+  return ordersAsync.whenData((orders) {
+    switch (filter) {
+      case OrderStatusFilter.all:
+        return orders;
+      case OrderStatusFilter.active:
+        return orders
+            .where((o) =>
+                o.status == OrderStatus.pending ||
+                o.status == OrderStatus.processing ||
+                o.status == OrderStatus.shipped)
+            .toList();
+      case OrderStatusFilter.completed:
+        return orders.where((o) => o.status == OrderStatus.delivered).toList();
+      case OrderStatusFilter.cancelled:
+        return orders.where((o) => o.status == OrderStatus.cancelled).toList();
+    }
+  });
 });

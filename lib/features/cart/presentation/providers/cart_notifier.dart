@@ -5,6 +5,7 @@ import '../../../../core/config/app_constants.dart';
 import '../../../../core/utils/app_logger.dart';
 import '../../../coupons/domain/entities/coupon_entity.dart';
 import '../../../coupons/presentation/providers/coupons_providers.dart';
+import '../../../orders/domain/entities/order_item_entity.dart';
 import '../../../products/domain/entities/product_entity.dart';
 import '../../data/datasources/cart_local_data_source.dart';
 import '../../domain/entities/cart_entity.dart';
@@ -62,6 +63,27 @@ class CartNotifier extends Notifier<CartEntity> {
       AppLogger.i('Cart: added ${product.nameEn} x$quantity (${variantLabel ?? 'default'})');
     }
     _saveToLocalStorage();
+  }
+
+  /// Adds a past [OrderItemEntity] into the cart, rehydrating its product & variants.
+  void addOrderItem(OrderItemEntity item) {
+    addItem(
+      product: item.toProductEntity(),
+      quantity: item.quantity,
+      variantId: item.variantId,
+      variantLabel: item.variantLabel,
+      color: item.color,
+      size: item.size,
+      sku: item.sku,
+      unitPrice: item.priceAtPurchase,
+    );
+  }
+
+  /// Re-orders all items from a past order into the active shopping cart in 1 tap.
+  void reorderItems(List<OrderItemEntity> items) {
+    for (final item in items) {
+      addOrderItem(item);
+    }
   }
 
   // ── Remove ───────────────────────────────────────────────────────────────

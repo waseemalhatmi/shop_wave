@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/extensions/context_ext.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../cart/presentation/providers/cart_notifier.dart';
 import '../../domain/entities/order_entity.dart';
 import '../providers/orders_providers.dart';
 
@@ -12,47 +14,70 @@ class OrdersScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ordersAsync = ref.watch(userOrdersProvider);
+    final filteredOrdersAsync = ref.watch(filteredUserOrdersProvider);
+    final currentFilter = ref.watch(orderStatusFilterProvider);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final isAr = Localizations.localeOf(context).languageCode == 'ar';
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.backgroundDark : AppColors.backgroundLight,
+      backgroundColor:
+          isDark ? AppColors.backgroundDark : AppColors.backgroundLight,
       appBar: AppBar(
-        title: const Text(
-          'My Orders',
-          style: TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.w700),
+        title: Text(
+          isAr ? 'طلباتي' : 'My Orders',
+          style: const TextStyle(
+            fontFamily: 'Outfit',
+            fontWeight: FontWeight.w700,
+          ),
         ),
         backgroundColor: AppColors.transparent,
         elevation: 0,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(48),
+          child: _FilterTabs(
+            selected: currentFilter,
+            isAr: isAr,
+            onSelect: (filter) {
+              ref.read(orderStatusFilterProvider.notifier).setFilter(filter);
+            },
+          ),
+        ),
       ),
       body: RefreshIndicator(
         onRefresh: () => ref.read(userOrdersProvider.notifier).refreshOrders(),
-        child: ordersAsync.when(
+        child: filteredOrdersAsync.when(
           data: (orders) {
             if (orders.isEmpty) {
-              return _buildEmptyState(context);
+              return _buildEmptyState(context, ref, currentFilter, isAr);
             }
             return ListView.builder(
               padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
               itemCount: orders.length,
               itemBuilder: (context, index) {
                 final order = orders[index];
-                return _OrderCard(order: order);
+                return _OrderCard(order: order, isAr: isAr);
               },
             );
           },
           loading: () => const Center(
             child: CircularProgressIndicator(),
           ),
-          error: (error, stack) => _buildErrorState(context, ref, error),
+          error: (error, stack) => _buildErrorState(context, ref, error, isAr),
         ),
       ),
     );
   }
 
-  Widget _buildEmptyState(BuildContext context) {
+  Widget _buildEmptyState(
+    BuildContext context,
+    WidgetRef ref,
+    OrderStatusFilter currentFilter,
+    bool isAr,
+  ) {
     final theme = Theme.of(context);
+    final isFiltered = currentFilter != OrderStatusFilter.all;
+
     return Center(
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
@@ -62,22 +87,35 @@ class OrdersScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Icons.shopping_bag_outlined,
-                size: 80,
-                color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                isFiltered
+                    ? Icons.filter_alt_off_rounded
+                    : Icons.shopping_bag_outlined,
+                size: 76,
+                color:
+                    theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
               ),
               const SizedBox(height: AppSpacing.md),
-              const Text(
-                'No Orders Yet',
-                style: TextStyle(
+              Text(
+                isFiltered
+                    ? (isAr
+                        ? 'لا توجد طلبات في هذا القسم'
+                        : 'No orders in this section')
+                    : (isAr ? 'لا توجد طلبات حتى الآن' : 'No Orders Yet'),
+                style: const TextStyle(
                   fontFamily: 'Outfit',
-                  fontSize: 20,
+                  fontSize: 19,
                   fontWeight: FontWeight.w700,
                 ),
               ),
               const SizedBox(height: AppSpacing.xs),
               Text(
-                'You haven\'t placed any orders yet. Start shopping now!',
+                isFiltered
+                    ? (isAr
+                        ? 'جرّب التبديل لعرض كل الطلبات لمشاهدة سجل مشترياتك الكامل.'
+                        : 'Switch to "All" to view your entire purchase history.')
+                    : (isAr
+                        ? 'لم تقم بإنشاء أي طلب بعد. تصفح آلاف المنتجات المميزة الآن!'
+                        : 'You haven\'t placed any orders yet. Start shopping now!'),
                 style: TextStyle(
                   fontFamily: 'Outfit',
                   color: theme.colorScheme.onSurfaceVariant,
@@ -86,8 +124,20 @@ class OrdersScreen extends ConsumerWidget {
               ),
               const SizedBox(height: AppSpacing.lg),
               ElevatedButton(
-                onPressed: () => context.go(AppRoutes.home),
-                child: const Text('Shop Now'),
+                onPressed: () {
+                  if (isFiltered) {
+                    ref
+                        .read(orderStatusFilterProvider.notifier)
+                        .setFilter(OrderStatusFilter.all);
+                  } else {
+                    context.go(AppRoutes.home);
+                  }
+                },
+                child: Text(
+                  isFiltered
+                      ? (isAr ? 'عرض كل الطلبات' : 'View All Orders')
+                      : (isAr ? 'تسوق الآن' : 'Shop Now'),
+                ),
               ),
             ],
           ),
@@ -96,7 +146,12 @@ class OrdersScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildErrorState(BuildContext context, WidgetRef ref, Object error) {
+  Widget _buildErrorState(
+    BuildContext context,
+    WidgetRef ref,
+    Object error,
+    bool isAr,
+  ) {
     final theme = Theme.of(context);
     return Center(
       child: SingleChildScrollView(
@@ -108,15 +163,15 @@ class OrdersScreen extends ConsumerWidget {
             children: [
               const Icon(
                 Icons.error_outline_rounded,
-                size: 80,
+                size: 70,
                 color: AppColors.error,
               ),
               const SizedBox(height: AppSpacing.md),
-              const Text(
-                'Failed to Load Orders',
-                style: TextStyle(
+              Text(
+                isAr ? 'فشل تحميل الطلبات' : 'Failed to Load Orders',
+                style: const TextStyle(
                   fontFamily: 'Outfit',
-                  fontSize: 20,
+                  fontSize: 18,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -131,8 +186,9 @@ class OrdersScreen extends ConsumerWidget {
               ),
               const SizedBox(height: AppSpacing.lg),
               ElevatedButton(
-                onPressed: () => ref.read(userOrdersProvider.notifier).refreshOrders(),
-                child: const Text('Try Again'),
+                onPressed: () =>
+                    ref.read(userOrdersProvider.notifier).refreshOrders(),
+                child: Text(isAr ? 'إعادة المحاولة' : 'Try Again'),
               ),
             ],
           ),
@@ -142,14 +198,64 @@ class OrdersScreen extends ConsumerWidget {
   }
 }
 
-class _OrderCard extends StatelessWidget {
-  const _OrderCard({required this.order});
-  final OrderEntity order;
+// ─── Filter Tabs Bar ──────────────────────────────────────────────────────────
+
+class _FilterTabs extends StatelessWidget {
+  const _FilterTabs({
+    required this.selected,
+    required this.isAr,
+    required this.onSelect,
+  });
+
+  final OrderStatusFilter selected;
+  final bool isAr;
+  final ValueChanged<OrderStatusFilter> onSelect;
 
   @override
   Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.screenHorizontal,
+        vertical: 6,
+      ),
+      child: Row(
+        children: OrderStatusFilter.values.map((filter) {
+          final isSelected = filter == selected;
+          return Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: ChoiceChip(
+              label: Text(filter.label(isAr)),
+              selected: isSelected,
+              onSelected: (_) => onSelect(filter),
+              selectedColor: AppColors.primary,
+              labelStyle: TextStyle(
+                fontFamily: 'Outfit',
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: isSelected ? Colors.white : null,
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+}
+
+// ─── Order Card with Live Actions ─────────────────────────────────────────────
+
+class _OrderCard extends ConsumerWidget {
+  const _OrderCard({required this.order, required this.isAr});
+  final OrderEntity order;
+  final bool isAr;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final sar = context.l10n.general_sar;
 
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
@@ -159,6 +265,13 @@ class _OrderCard extends StatelessWidget {
         border: Border.all(
           color: isDark ? AppColors.borderDark : AppColors.borderLight,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: InkWell(
         onTap: () => context.push(AppRoutes.orderDetailPath(order.id)),
@@ -168,45 +281,176 @@ class _OrderCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Header: Order ID & Status Chip
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    order.orderNumber,
-                    style: const TextStyle(
-                      fontFamily: 'Outfit',
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withValues(alpha: 0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.receipt_rounded,
+                          size: 16,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        order.orderNumber,
+                        style: const TextStyle(
+                          fontFamily: 'Outfit',
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
                   ),
                   _StatusChip(status: order.status),
                 ],
               ),
-              const SizedBox(height: AppSpacing.sm),
-              Text(
-                _formatDate(order.createdAt),
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-              const Divider(height: AppSpacing.lg),
+              const SizedBox(height: 8),
+
+              // Date & Item summary
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    '${order.items.length} items',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.schedule_rounded,
+                        size: 13,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        _formatDate(order.createdAt),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ],
                   ),
                   Text(
-                    '\$${order.total.toStringAsFixed(2)}',
-                    style: const TextStyle(
-                      fontFamily: 'Outfit',
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.primary,
+                    isAr
+                        ? '${order.totalItemCount} قطعة'
+                        : '${order.totalItemCount} items',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w600,
                     ),
+                  ),
+                ],
+              ),
+
+              const Divider(height: AppSpacing.lg),
+
+              // Total Price & Action buttons
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        isAr ? 'الإجمالي' : 'Total',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                          fontSize: 11,
+                        ),
+                      ),
+                      Text(
+                        '${order.total.toStringAsFixed(2)} $sar',
+                        style: const TextStyle(
+                          fontFamily: 'Outfit',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  // Actions row
+                  Row(
+                    children: [
+                      // 1-Tap Re-order Button
+                      OutlinedButton.icon(
+                        onPressed: () {
+                          ref
+                              .read(cartNotifierProvider.notifier)
+                              .reorderItems(order.items);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                isAr
+                                    ? 'تمت إضافة منتجات الطلب إلى السلة!'
+                                    : 'Items added to cart!',
+                                style: const TextStyle(fontFamily: 'Outfit'),
+                              ),
+                              backgroundColor: AppColors.success,
+                              behavior: SnackBarBehavior.floating,
+                              action: SnackBarAction(
+                                label: isAr ? 'عرض السلة' : 'View Cart',
+                                textColor: Colors.white,
+                                onPressed: () => context.push(AppRoutes.cart),
+                              ),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.replay_rounded, size: 14),
+                        label: Text(
+                          isAr ? 'إعادة الطلب' : 'Re-order',
+                          style: const TextStyle(
+                            fontFamily: 'Outfit',
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 8,
+                          ),
+                          minimumSize: Size.zero,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+
+                      // Track button
+                      ElevatedButton(
+                        onPressed: () => context.push(
+                          AppRoutes.orderDetailPath(order.id),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          minimumSize: Size.zero,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: Text(
+                          isAr ? 'تتبع' : 'Track',
+                          style: const TextStyle(
+                            fontFamily: 'Outfit',
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -222,6 +466,8 @@ class _OrderCard extends StatelessWidget {
   }
 }
 
+// ─── Status Chip ──────────────────────────────────────────────────────────────
+
 class _StatusChip extends StatelessWidget {
   const _StatusChip({required this.status});
   final OrderStatus status;
@@ -230,7 +476,7 @@ class _StatusChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final (bg, text, label) = _getColors();
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(8),
@@ -239,7 +485,7 @@ class _StatusChip extends StatelessWidget {
         label,
         style: TextStyle(
           color: text,
-          fontSize: 12,
+          fontSize: 11,
           fontWeight: FontWeight.w700,
           fontFamily: 'Outfit',
         ),
@@ -250,15 +496,35 @@ class _StatusChip extends StatelessWidget {
   (Color, Color, String) _getColors() {
     switch (status) {
       case OrderStatus.pending:
-        return (Colors.orange.withValues(alpha: 0.15), Colors.orange.shade800, 'Pending');
+        return (
+          Colors.orange.withValues(alpha: 0.15),
+          Colors.orange.shade800,
+          'Pending'
+        );
       case OrderStatus.processing:
-        return (Colors.blue.withValues(alpha: 0.15), Colors.blue.shade800, 'Processing');
+        return (
+          Colors.blue.withValues(alpha: 0.15),
+          Colors.blue.shade800,
+          'Processing'
+        );
       case OrderStatus.shipped:
-        return (Colors.purple.withValues(alpha: 0.15), Colors.purple.shade800, 'Shipped');
+        return (
+          Colors.purple.withValues(alpha: 0.15),
+          Colors.purple.shade800,
+          'Shipped'
+        );
       case OrderStatus.delivered:
-        return (Colors.green.withValues(alpha: 0.15), Colors.green.shade800, 'Delivered');
+        return (
+          Colors.green.withValues(alpha: 0.15),
+          Colors.green.shade800,
+          'Delivered'
+        );
       case OrderStatus.cancelled:
-        return (Colors.red.withValues(alpha: 0.15), Colors.red.shade800, 'Cancelled');
+        return (
+          Colors.red.withValues(alpha: 0.15),
+          Colors.red.shade800,
+          'Cancelled'
+        );
     }
   }
 }

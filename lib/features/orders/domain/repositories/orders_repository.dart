@@ -21,4 +21,16 @@ abstract class OrdersRepository {
     String? couponId,
     double discountAmount = 0.0,
   });
+
+  /// Streams real-time updates for a single order from Supabase Realtime.
+  Stream<Either<Failure, OrderEntity>> streamOrderDetails(String orderId);
+
+  /// Streams real-time updates for all orders of current user.
+  Stream<Either<Failure, List<OrderEntity>>> streamUserOrders();
+
+  /// Cancels an active pending/processing order.
+  Future<Either<Failure, OrderEntity>> cancelOrder({
+    required String orderId,
+    String? reason,
+  });
 }

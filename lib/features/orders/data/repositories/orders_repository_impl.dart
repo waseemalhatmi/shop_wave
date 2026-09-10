@@ -66,4 +66,49 @@ class OrdersRepositoryImpl implements OrdersRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
+
+  @override
+  Stream<Either<Failure, OrderEntity>> streamOrderDetails(String orderId) {
+    return remoteDataSource
+        .streamOrderDetails(orderId)
+        .map<Either<Failure, OrderEntity>>((model) => Right(model.toDomain()))
+        .handleError((Object error) {
+      if (error is ServerAppException) {
+        return Left<Failure, OrderEntity>(ServerFailure(error.message));
+      }
+      return Left<Failure, OrderEntity>(ServerFailure(error.toString()));
+    });
+  }
+
+  @override
+  Stream<Either<Failure, List<OrderEntity>>> streamUserOrders() {
+    return remoteDataSource
+        .streamUserOrders()
+        .map<Either<Failure, List<OrderEntity>>>(
+            (models) => Right(models.map((m) => m.toDomain()).toList()))
+        .handleError((Object error) {
+      if (error is ServerAppException) {
+        return Left<Failure, List<OrderEntity>>(ServerFailure(error.message));
+      }
+      return Left<Failure, List<OrderEntity>>(ServerFailure(error.toString()));
+    });
+  }
+
+  @override
+  Future<Either<Failure, OrderEntity>> cancelOrder({
+    required String orderId,
+    String? reason,
+  }) async {
+    try {
+      final orderModel = await remoteDataSource.cancelOrder(
+        orderId: orderId,
+        reason: reason,
+      );
+      return Right(orderModel.toDomain());
+    } on ServerAppException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }

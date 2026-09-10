@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../../products/domain/entities/product_entity.dart';
 
 /// Domain entity representing an individual item within an order,
 /// including variant tracking (color, size, SKU) and immutable purchase price.
@@ -53,6 +54,25 @@ class OrderItemEntity extends Equatable {
       if (size != null && size!.isNotEmpty) size!,
     ];
     return parts.isEmpty ? null : parts.join(' / ');
+  }
+
+  /// Converts this order item into a [ProductEntity] for 1-tap re-ordering into cart.
+  ProductEntity toProductEntity() {
+    return ProductEntity(
+      id: productId,
+      nameEn: productNameEn,
+      nameAr: productNameAr,
+      slug: productId,
+      basePrice: priceAtPurchase,
+      finalPrice: priceAtPurchase,
+      discountPercent: 0,
+      avgRating: 5.0,
+      reviewCount: 0,
+      soldCount: 0,
+      primaryImageUrl: productImage,
+      images: [productImage],
+      sku: sku,
+    );
   }
 
   @override

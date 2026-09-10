@@ -16,6 +16,12 @@ abstract class OrdersRemoteDataSource {
     String? couponId,
     double discountAmount = 0.0,
   });
+  Stream<OrderModel> streamOrderDetails(String orderId);
+  Stream<List<OrderModel>> streamUserOrders();
+  Future<OrderModel> cancelOrder({
+    required String orderId,
+    String? reason,
+  });
 }
 
 class OrdersRemoteDataSourceImpl implements OrdersRemoteDataSource {
@@ -105,7 +111,7 @@ class OrdersRemoteDataSourceImpl implements OrdersRemoteDataSource {
 
       final orderId = orderResponse['id'] as String;
 
-      // Step 2: Insert order items
+      // Step 2: Insert order items (including color, size, sku variants)
       final orderItemsToInsert = items.map((item) {
         return {
           'order_id': orderId,
@@ -115,6 +121,11 @@ class OrdersRemoteDataSourceImpl implements OrdersRemoteDataSource {
           'product_image': item['product_image'],
           'quantity': item['quantity'],
           'price_at_purchase': item['price_at_purchase'],
+          if (item['variant_id'] != null) 'variant_id': item['variant_id'],
+          if (item['variant_label'] != null) 'variant_label': item['variant_label'],
+          if (item['color'] != null) 'color': item['color'],
+          if (item['size'] != null) 'size': item['size'],
+          if (item['sku'] != null) 'sku': item['sku'],
         };
       }).toList();
 
@@ -128,6 +139,63 @@ class OrdersRemoteDataSourceImpl implements OrdersRemoteDataSource {
           .single();
 
       return OrderModel.fromJson(completeOrderResponse);
+    } catch (e) {
+      throw ServerAppException(e.toString());
+    }
+  }
+
+  @override
+  Stream<OrderModel> streamOrderDetails(String orderId) {
+    final userId = supabaseClient.auth.currentUser?.id;
+    if (userId == null) {
+      throw const ServerAppException('User not authenticated');
+    }
+
+    return supabaseClient
+        .from('orders')
+        .stream(primaryKey: ['id'])
+        .eq('id', orderId)
+        .asyncMap((_) async {
+          return await getOrderDetails(orderId);
+        });
+  }
+
+  @override
+  Stream<List<OrderModel>> streamUserOrders() {
+    final userId = supabaseClient.auth.currentUser?.id;
+    if (userId == null) {
+      return Stream.value([]);
+    }
+
+    return supabaseClient
+        .from('orders')
+        .stream(primaryKey: ['id'])
+        .eq('user_id', userId)
+        .order('created_at', ascending: false)
+        .map((rows) => rows.map((e) => OrderModel.fromJson(e)).toList());
+  }
+
+  @override
+  Future<OrderModel> cancelOrder({
+    required String orderId,
+    String? reason,
+  }) async {
+    try {
+      final userId = supabaseClient.auth.currentUser?.id;
+      if (userId == null) {
+        throw const ServerAppException('User not authenticated');
+      }
+
+      await supabaseClient
+          .from('orders')
+          .update({
+            'status': 'cancelled',
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('id', orderId)
+          .eq('user_id', userId);
+
+      return await getOrderDetails(orderId);
     } catch (e) {
       throw ServerAppException(e.toString());
     }
