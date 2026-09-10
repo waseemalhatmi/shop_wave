@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/error/failures.dart';
+import '../../domain/entities/profile_stats_entity.dart';
 import '../../domain/repositories/profile_repository.dart';
 import '../datasources/profile_remote_data_source.dart';
 
@@ -26,6 +27,18 @@ class ProfileRepositoryImpl implements ProfileRepository {
         gender: gender,
       );
       return const Right(null);
+    } on ServerAppException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, ProfileStatsEntity>> getProfileStats() async {
+    try {
+      final stats = await remoteDataSource.getProfileStats();
+      return Right(stats);
     } on ServerAppException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {

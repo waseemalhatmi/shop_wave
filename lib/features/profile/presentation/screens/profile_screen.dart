@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../../../core/extensions/context_ext.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/extensions/context_ext.dart';
 import '../../../auth/presentation/providers/auth_notifier.dart';
+import '../providers/profile_providers.dart';
 
 /// Profile screen — user account overview and navigation hub.
 class ProfileScreen extends ConsumerWidget {
@@ -18,6 +20,8 @@ class ProfileScreen extends ConsumerWidget {
     final isAr = Localizations.localeOf(context).languageCode == 'ar';
 
     final user = authState is AuthAuthenticated ? authState.user : null;
+    final statsAsync = ref.watch(profileStatsProvider);
+    final stats = statsAsync.value;
 
     return Scaffold(
       backgroundColor:
@@ -60,7 +64,7 @@ class ProfileScreen extends ConsumerWidget {
                                 child: Image.network(
                                   user!.avatarUrl!,
                                   fit: BoxFit.cover,
-                                  errorBuilder: (_, __, ___) =>
+                                  errorBuilder: (context, error, stackTrace) =>
                                       _InitialsAvatar(initials: user.initials),
                                 ),
                               )
@@ -121,11 +125,30 @@ class ProfileScreen extends ConsumerWidget {
               padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
               child: Row(
                 children: [
-                  _StatCard(label: isAr ? 'الطلبات' : 'Orders', value: '12', icon: Icons.shopping_bag_outlined),
+                  _StatCard(
+                    label: isAr ? 'الطلبات' : 'Orders',
+                    value: stats != null ? '${stats.ordersCount}' : '...',
+                    icon: Icons.shopping_bag_outlined,
+                    onTap: () => context.push(AppRoutes.orders),
+                  ),
                   const SizedBox(width: AppSpacing.md),
-                  _StatCard(label: isAr ? 'المفضلة' : 'Wishlist', value: '8', icon: Icons.favorite_outline_rounded),
+                  _StatCard(
+                    label: isAr ? 'المفضلة' : 'Wishlist',
+                    value: stats != null ? '${stats.wishlistCount}' : '...',
+                    icon: Icons.favorite_outline_rounded,
+                    onTap: () => context.push(AppRoutes.favorites),
+                  ),
                   const SizedBox(width: AppSpacing.md),
-                  _StatCard(label: isAr ? 'التقييمات' : 'Reviews', value: '5', icon: Icons.star_outline_rounded),
+                  _StatCard(
+                    label: isAr ? 'التقييمات' : 'Reviews',
+                    value: stats != null ? '${stats.reviewsCount}' : '...',
+                    icon: Icons.star_outline_rounded,
+                    onTap: () => _showReviewsInfo(
+                      context,
+                      isAr,
+                      stats?.reviewsCount ?? 0,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -146,6 +169,13 @@ class ProfileScreen extends ConsumerWidget {
                         icon: Icons.person_outline_rounded,
                         label: context.l10n.profile_edit,
                         onTap: () => context.push(AppRoutes.editProfile),
+                      ),
+                      _ProfileMenuItem(
+                        icon: Icons.shield_outlined,
+                        label: isAr
+                            ? 'الأمان وكلمة المرور'
+                            : 'Security & Password',
+                        onTap: () => context.push(AppRoutes.security),
                       ),
                       _ProfileMenuItem(
                         icon: Icons.location_on_outlined,
@@ -176,12 +206,12 @@ class ProfileScreen extends ConsumerWidget {
                       _ProfileMenuItem(
                         icon: Icons.help_outline_rounded,
                         label: context.l10n.profile_help,
-                        onTap: () {},
+                        onTap: () => context.push(AppRoutes.helpSupport),
                       ),
                       _ProfileMenuItem(
                         icon: Icons.privacy_tip_outlined,
                         label: context.l10n.profile_privacy,
-                        onTap: () {},
+                        onTap: () => context.push(AppRoutes.privacyPolicy),
                       ),
                     ],
                   ),
@@ -227,6 +257,37 @@ class ProfileScreen extends ConsumerWidget {
       ),
     );
   }
+
+  void _showReviewsInfo(BuildContext context, bool isAr, int count) {
+    showDialog<void>(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            const Icon(Icons.star_rounded, color: Colors.amber, size: 28),
+            const SizedBox(width: 8),
+            Text(
+              isAr ? 'تقييماتي ومراجعاتي' : 'My Reviews',
+              style: const TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.w700),
+            ),
+          ],
+        ),
+        content: Text(
+          isAr
+              ? 'لقد قمت بكتابة $count تقييم للمنتجات حتى الآن. تظهر تقييماتك للمتسوقين لمساعدتهم في اتخاذ قرارات الشراء.'
+              : 'You have submitted $count product review(s) so far. Your feedback helps other shoppers make informed choices.',
+          style: const TextStyle(fontFamily: 'Outfit', height: 1.4),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogCtx),
+            child: Text(isAr ? 'حسناً' : 'OK'),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 // ─── Sub-widgets ──────────────────────────────────────────────────────────────
@@ -254,50 +315,70 @@ class _StatCard extends StatelessWidget {
     required this.label,
     required this.value,
     required this.icon,
+    this.onTap,
   });
 
   final String label;
   final String value;
   final IconData icon;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-        decoration: BoxDecoration(
-          color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: isDark ? AppColors.shadowDark : AppColors.shadowLight,
-              blurRadius: 10,
-              offset: const Offset(0, 2),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.sm,
+            vertical: AppSpacing.md,
+          ),
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: isDark
+                  ? AppColors.primary.withValues(alpha: 0.2)
+                  : AppColors.primary.withValues(alpha: 0.1),
             ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: AppColors.primary, size: 22),
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              value,
-              style: const TextStyle(
-                fontFamily: 'Outfit',
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
+            boxShadow: [
+              BoxShadow(
+                color: isDark ? AppColors.shadowDark : AppColors.shadowLight,
+                blurRadius: 8,
+                offset: const Offset(0, 2),
               ),
-            ),
-            Text(
-              label,
-              style: TextStyle(
-                fontFamily: 'Outfit',
-                fontSize: 11,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 22, color: AppColors.primary),
+              const SizedBox(height: 6),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontFamily: 'Outfit',
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.primary,
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 2),
+              Text(
+                label,
+                style: TextStyle(
+                  fontFamily: 'Outfit',
+                  fontSize: 11,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
       ),
     );

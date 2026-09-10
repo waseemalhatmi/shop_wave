@@ -112,6 +112,25 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<Either<Failure, void>> updatePassword({
+    required String newPassword,
+  }) async {
+    try {
+      await _remoteDataSource.updatePassword(newPassword: newPassword);
+      return const Right(null);
+    } on AuthAppException catch (e) {
+      return Left(AuthFailure(e.message));
+    } on NetworkAppException catch (e) {
+      return Left(NetworkFailure(e.message));
+    } on ServerAppException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e, st) {
+      AppLogger.e('AuthRepository.updatePassword', error: e, stackTrace: st);
+      return const Left(UnexpectedFailure());
+    }
+  }
+
+  @override
   Stream<UserEntity?> get authStateChanges =>
       _remoteDataSource.authStateChanges.map((dto) => dto?.toEntity());
 }

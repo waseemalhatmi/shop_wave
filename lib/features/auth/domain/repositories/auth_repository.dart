@@ -40,6 +40,11 @@ abstract class AuthRepository {
   /// Signs out the current user and clears all session data.
   Future<Either<Failure, void>> signOut();
 
+  /// Updates current user's password.
+  Future<Either<Failure, void>> updatePassword({
+    required String newPassword,
+  });
+
   /// Stream of auth state changes (logged in / logged out).
   Stream<UserEntity?> get authStateChanges;
 }

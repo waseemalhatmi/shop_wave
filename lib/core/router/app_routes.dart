@@ -1,4 +1,4 @@
-﻿/// All route paths in the application — single source of truth.
+/// All route paths in the application — single source of truth.
 abstract final class AppRoutes {
   // ── Auth ───────────────────────────────────────────────────────
   static const String splash = '/';
@@ -31,6 +31,9 @@ abstract final class AppRoutes {
 
   // ── Profile Sub-screens ────────────────────────────────────────
   static const String editProfile = '/profile/edit';
+  static const String security = '/profile/security';
+  static const String helpSupport = '/profile/help';
+  static const String privacyPolicy = '/profile/privacy';
   static const String addresses = '/addresses';
   static const String addAddress = '/addresses/add';
   static const String editAddress = '/addresses/:addressId/edit';

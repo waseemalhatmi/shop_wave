@@ -150,6 +150,21 @@ class AuthRemoteDataSource {
     }
   }
 
+  /// Updates current user password in Supabase Auth.
+  Future<void> updatePassword({required String newPassword}) async {
+    try {
+      await _supabase.auth.updateUser(
+        UserAttributes(password: newPassword),
+      );
+      AppLogger.i('Password updated successfully');
+    } on supa.AuthException catch (e) {
+      throw AuthAppException(_mapAuthError(e.message));
+    } catch (e, st) {
+      AppLogger.e('updatePassword: unexpected', error: e, stackTrace: st);
+      throw const ServerAppException('Failed to update password.');
+    }
+  }
+
   /// Stream of auth state changes.
   Stream<UserDto?> get authStateChanges =>
       _supabase.auth.onAuthStateChange.map((event) {

@@ -22,7 +22,10 @@ import '../../features/orders/presentation/screens/order_detail_screen.dart';
 import '../../features/orders/presentation/screens/orders_screen.dart';
 import '../../features/products/presentation/screens/product_detail_screen.dart';
 import '../../features/products/presentation/screens/product_list_screen.dart';
+import '../../features/profile/presentation/screens/account_security_screen.dart';
 import '../../features/profile/presentation/screens/edit_profile_screen.dart';
+import '../../features/profile/presentation/screens/help_support_screen.dart';
+import '../../features/profile/presentation/screens/privacy_policy_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/reviews/presentation/screens/add_review_screen.dart';
 import '../../features/reviews/presentation/screens/reviews_screen.dart';
@@ -113,6 +116,9 @@ final class AppRouter {
 
       // ── Profile sub-screens ───────────────────────────────────
       GoRoute(path: AppRoutes.editProfile, name: 'editProfile', builder: (_, __) => const EditProfileScreen()),
+      GoRoute(path: AppRoutes.security, name: 'security', builder: (_, __) => const AccountSecurityScreen()),
+      GoRoute(path: AppRoutes.helpSupport, name: 'helpSupport', builder: (_, __) => const HelpSupportScreen()),
+      GoRoute(path: AppRoutes.privacyPolicy, name: 'privacyPolicy', builder: (_, __) => const PrivacyPolicyScreen()),
       GoRoute(path: AppRoutes.addresses, name: 'addresses', builder: (_, __) => const AddressesScreen()),
       GoRoute(path: AppRoutes.addAddress, name: 'addAddress', builder: (_, __) => const AddAddressScreen()),
       GoRoute(path: AppRoutes.editAddress, name: 'editAddress', builder: (_, state) => AddAddressScreen(addressToEdit: state.extra as AddressEntity?)),

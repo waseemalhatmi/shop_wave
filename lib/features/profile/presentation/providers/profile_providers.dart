@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/di/providers.dart';
 import '../../../auth/presentation/providers/auth_notifier.dart';
+import '../../../auth/presentation/providers/auth_providers.dart';
+import '../../domain/entities/profile_stats_entity.dart';
 import '../../domain/repositories/profile_repository.dart';
 import '../../data/datasources/profile_remote_data_source.dart';
 import '../../data/repositories/profile_repository_impl.dart';
@@ -11,6 +13,8 @@ final profileRepositoryProvider = Provider<ProfileRepository>((ref) {
   final remoteDataSource = ProfileRemoteDataSourceImpl(supabase);
   return ProfileRepositoryImpl(remoteDataSource);
 });
+
+// ─── Profile Update Notifier ──────────────────────────────────────────────────
 
 class ProfileUpdateNotifier extends AsyncNotifier<void> {
   @override
@@ -53,6 +57,47 @@ class ProfileUpdateNotifier extends AsyncNotifier<void> {
   }
 }
 
-final profileUpdateProvider = AsyncNotifierProvider<ProfileUpdateNotifier, void>(() {
+final profileUpdateProvider =
+    AsyncNotifierProvider<ProfileUpdateNotifier, void>(() {
   return ProfileUpdateNotifier();
 });
+
+// ─── Real Dynamic Profile Statistics Provider ─────────────────────────────────
+
+final profileStatsProvider =
+    FutureProvider.autoDispose<ProfileStatsEntity>((ref) async {
+  final repository = ref.watch(profileRepositoryProvider);
+  final result = await repository.getProfileStats();
+  return result.fold(
+    (failure) => const ProfileStatsEntity(),
+    (stats) => stats,
+  );
+});
+
+// ─── Change Password Notifier ─────────────────────────────────────────────────
+
+class ChangePasswordNotifier extends AsyncNotifier<void> {
+  @override
+  FutureOr<void> build() {}
+
+  Future<bool> changePassword(String newPassword) async {
+    state = const AsyncLoading();
+    final authRepo = ref.read(authRepositoryProvider);
+    final result = await authRepo.updatePassword(newPassword: newPassword);
+    return result.fold(
+      (failure) {
+        state = AsyncError(failure.message, StackTrace.current);
+        return false;
+      },
+      (_) {
+        state = const AsyncData(null);
+        return true;
+      },
+    );
+  }
+}
+
+final changePasswordProvider =
+    AsyncNotifierProvider<ChangePasswordNotifier, void>(
+  ChangePasswordNotifier.new,
+);

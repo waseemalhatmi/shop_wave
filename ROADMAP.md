@@ -121,7 +121,7 @@ Phase 8: [ ] Not Started  — Testing & Production release
 - [x] **Step 4: Saved Shipping Addresses Selection in Checkout** — 1-click saved address picker, default address preselection, and inline new address creation.
 - [x] **Step 5: Variant Tracking in Order Details** — Persist selected product variants (Color, Size, SKU) in `order_items` and show in order receipts.
 - [x] **Step 6: Realtime Order Tracking & Actions** — Supabase Realtime stream for live status updates, order cancellation, and 1-tap re-order.
-- [ ] **Step 7: Dynamic Profile Statistics & Account Security** — Real counts for Orders/Wishlist/Reviews, change password, and support screens.
+- [x] **Step 7: Dynamic Profile Statistics & Account Security** — Real counts for Orders/Wishlist/Reviews, change password with strength meter, and support & privacy screens.
 - [ ] **Step 8: Complete Dual-Language Localization (Ar/En)** — 100% Arabic & English coverage with full RTL/LTR across all screens and dialogues.
 - [ ] **Step 9: Micro-animations, Lottie & Haptic Feedback** — Engaging empty states, order confirmation animations, and tactile feedback.
 - [ ] **Step 10: Automated Testing Suite & CI/CD Pipeline** — Unit & notifier tests with mocktail, plus GitHub Actions CI workflow.
