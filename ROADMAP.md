@@ -122,9 +122,9 @@ Phase 8: [ ] Not Started  — Testing & Production release
 - [x] **Step 5: Variant Tracking in Order Details** — Persist selected product variants (Color, Size, SKU) in `order_items` and show in order receipts.
 - [x] **Step 6: Realtime Order Tracking & Actions** — Supabase Realtime stream for live status updates, order cancellation, and 1-tap re-order.
 - [x] **Step 7: Dynamic Profile Statistics & Account Security** — Real counts for Orders/Wishlist/Reviews, change password with strength meter, and support & privacy screens.
-- [ ] **Step 8: Complete Dual-Language Localization (Ar/En)** — 100% Arabic & English coverage with full RTL/LTR across all screens and dialogues.
-- [ ] **Step 9: Micro-animations, Lottie & Haptic Feedback** — Engaging empty states, order confirmation animations, and tactile feedback.
-- [ ] **Step 10: Automated Testing Suite & CI/CD Pipeline** — Unit & notifier tests with mocktail, plus GitHub Actions CI workflow.
+- [x] **Step 8: Complete Dual-Language Localization (Ar/En)** — 200+ localization keys in both Arabic & English ARB files covering all screens, routes, messages, and new Step 7+ features. `flutter gen-l10n` clean.
+- [x] **Step 9: Micro-animations, Haptic Feedback & Enhanced UI** — `flutter_animate` entrance animations, `AnimatedTapScale` tap-scale micro-interaction, `EmptyStateWidget` with elastic icon pop, `ShimmerBox` skeleton loaders, and semantic haptic feedback (`AppHaptics`) across all interactive surfaces.
+- [x] **Step 10: Automated Testing Suite & CI/CD Pipeline** — 9 unit tests (SignIn, SignUp, SignOut use cases with mocktail) + CartNotifier + CartEntity tests passing. GitHub Actions CI/CD with 4 jobs: analyze, test with coverage, Android APK build, iOS simulator build.
 
 ---
 

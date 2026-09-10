@@ -73,6 +73,45 @@ class AppLocalizationsAr extends AppLocalizations {
   String get general_free => 'مجاني';
 
   @override
+  String get general_confirm => 'تأكيد';
+
+  @override
+  String get general_close => 'إغلاق';
+
+  @override
+  String get general_clear => 'مسح';
+
+  @override
+  String get general_apply => 'تطبيق';
+
+  @override
+  String get general_copy => 'نسخ';
+
+  @override
+  String get general_copied => 'تم النسخ!';
+
+  @override
+  String get general_share => 'مشاركة';
+
+  @override
+  String get general_add => 'إضافة';
+
+  @override
+  String get general_remove => 'إزالة';
+
+  @override
+  String get general_update => 'تحديث';
+
+  @override
+  String get general_success => 'تمت العملية بنجاح';
+
+  @override
+  String get general_view_all => 'عرض الكل';
+
+  @override
+  String get general_go_home => 'العودة للرئيسية';
+
+  @override
   String get onboarding_skip => 'تخطي';
 
   @override
@@ -108,6 +147,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get auth_logout => 'تسجيل الخروج';
 
   @override
+  String get auth_logout_confirm => 'هل أنت متأكد من تسجيل الخروج؟';
+
+  @override
   String get auth_email => 'البريد الإلكتروني';
 
   @override
@@ -130,6 +172,21 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get auth_password_mismatch => 'كلمتا المرور غير متطابقتين';
+
+  @override
+  String get auth_password_new => 'كلمة المرور الجديدة';
+
+  @override
+  String get auth_password_new_hint => 'أدخل كلمة المرور الجديدة';
+
+  @override
+  String get auth_password_current => 'كلمة المرور الحالية';
+
+  @override
+  String get auth_password_current_hint => 'أدخل كلمة المرور الحالية';
+
+  @override
+  String get auth_password_updated => 'تم تحديث كلمة المرور بنجاح';
 
   @override
   String get auth_full_name => 'الاسم الكامل';
@@ -217,6 +274,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get home_best_sellers => 'الأكثر مبيعاً';
 
   @override
+  String get home_greeting_morning => 'صباح الخير';
+
+  @override
+  String get home_greeting_afternoon => 'مساء الخير';
+
+  @override
+  String get home_greeting_evening => 'مساء النور';
+
+  @override
+  String get home_no_products => 'لا توجد منتجات في هذه الفئة';
+
+  @override
   String get product_add_to_cart => 'أضف إلى السلة';
 
   @override
@@ -262,6 +331,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get product_removed_from_favorites => 'حُذف من المفضلة';
 
   @override
+  String product_items_left(int count) {
+    return 'تبقى $count فقط';
+  }
+
+  @override
+  String product_discount_badge(int percent) {
+    return 'خصم $percent%';
+  }
+
+  @override
   String get cart_title => 'سلة التسوق';
 
   @override
@@ -292,6 +371,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String cart_items(int count) {
     return '$count عناصر';
   }
+
+  @override
+  String get cart_remove_item => 'إزالة العنصر';
+
+  @override
+  String get cart_remove_confirm => 'هل تريد إزالة هذا العنصر من السلة؟';
+
+  @override
+  String get cart_coupon_remove => 'إزالة الكوبون';
 
   @override
   String get checkout_title => 'إتمام الطلب';
@@ -327,6 +415,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get checkout_card => 'بطاقة ائتمانية / مدى';
 
   @override
+  String get checkout_no_address => 'يرجى اختيار عنوان التوصيل';
+
+  @override
+  String get checkout_processing => 'جارٍ معالجة طلبك...';
+
+  @override
   String get order_confirmed_title => 'تم تأكيد طلبك!';
 
   @override
@@ -345,6 +439,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get orders_empty => 'لا يوجد طلبات بعد';
+
+  @override
+  String get orders_empty_desc => 'لم تقم بأي طلب بعد. ابدأ التسوق الآن!';
 
   @override
   String get order_detail_title => 'تفاصيل الطلب';
@@ -369,6 +466,50 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get order_status_refunded => 'مُسترد';
+
+  @override
+  String get order_cancel => 'إلغاء الطلب';
+
+  @override
+  String get order_cancel_confirm => 'هل تريد إلغاء هذا الطلب؟';
+
+  @override
+  String get order_cancel_reason => 'سبب الإلغاء';
+
+  @override
+  String get order_cancel_success => 'تم إلغاء الطلب بنجاح';
+
+  @override
+  String get order_reorder => 'إعادة الطلب';
+
+  @override
+  String get order_reorder_success => 'تمت إضافة المنتجات إلى السلة!';
+
+  @override
+  String get order_live_tracking => 'تتبع مباشر';
+
+  @override
+  String get order_filter_all => 'الكل';
+
+  @override
+  String get order_filter_active => 'نشط';
+
+  @override
+  String get order_filter_completed => 'مكتمل';
+
+  @override
+  String get order_filter_cancelled => 'ملغي';
+
+  @override
+  String get order_number => 'رقم الطلب';
+
+  @override
+  String get order_date => 'تاريخ الطلب';
+
+  @override
+  String order_items_count(int count) {
+    return '$count منتجات';
+  }
 
   @override
   String get favorites_title => 'المفضلة';
@@ -411,6 +552,149 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get profile_privacy => 'سياسة الخصوصية';
+
+  @override
+  String get profile_security => 'الأمان وكلمة المرور';
+
+  @override
+  String get profile_stat_orders => 'الطلبات';
+
+  @override
+  String get profile_stat_wishlist => 'المفضلة';
+
+  @override
+  String get profile_stat_reviews => 'التقييمات';
+
+  @override
+  String get profile_my_reviews => 'تقييماتي ومراجعاتي';
+
+  @override
+  String profile_reviews_desc(int count) {
+    return 'لقد قمت بكتابة $count تقييم للمنتجات حتى الآن.';
+  }
+
+  @override
+  String get profile_verified_email => 'بريد إلكتروني موثق';
+
+  @override
+  String get profile_change_password => 'تغيير كلمة المرور';
+
+  @override
+  String get profile_update_password => 'تحديث كلمة المرور';
+
+  @override
+  String get profile_password_weak => 'ضعيف';
+
+  @override
+  String get profile_password_medium => 'متوسط';
+
+  @override
+  String get profile_password_strong => 'قوي';
+
+  @override
+  String get profile_two_factor => 'التحقق بخطوتين';
+
+  @override
+  String get profile_two_factor_enabled => 'مُفعّل';
+
+  @override
+  String get profile_two_factor_disabled => 'غير مُفعّل';
+
+  @override
+  String get profile_active_sessions => 'الجلسات النشطة';
+
+  @override
+  String get profile_email_verified => 'موثق';
+
+  @override
+  String get profile_email_not_verified => 'غير موثق';
+
+  @override
+  String get security_title => 'الأمان وكلمة المرور';
+
+  @override
+  String get security_password_section => 'تغيير كلمة المرور';
+
+  @override
+  String get security_strength_title => 'مستوى القوة';
+
+  @override
+  String get security_req_length => '8 أحرف على الأقل';
+
+  @override
+  String get security_req_case => 'أحرف كبيرة وصغيرة';
+
+  @override
+  String get security_req_number => 'رقم واحد على الأقل';
+
+  @override
+  String get security_req_special => 'رمز خاص واحد (!@#...).';
+
+  @override
+  String get support_title => 'المساعدة والدعم';
+
+  @override
+  String get support_faq => 'الأسئلة الشائعة';
+
+  @override
+  String get support_contact => 'تواصل معنا';
+
+  @override
+  String get support_whatsapp => 'واتساب';
+
+  @override
+  String get support_email => 'البريد الإلكتروني';
+
+  @override
+  String get support_hotline => 'الخط الساخن';
+
+  @override
+  String get support_copy_success => 'تم النسخ';
+
+  @override
+  String get support_faq_q1 => 'كيف أتتبع طلبي؟';
+
+  @override
+  String get support_faq_a1 =>
+      'يمكنك متابعة حالة طلبك من قسم \"طلباتي\" في حسابك.';
+
+  @override
+  String get support_faq_q2 => 'ما هي سياسة الإرجاع؟';
+
+  @override
+  String get support_faq_a2 =>
+      'يمكنك إرجاع أي منتج خلال 14 يوماً من تاريخ الاستلام.';
+
+  @override
+  String get support_faq_q3 => 'هل الدفع الإلكتروني آمن؟';
+
+  @override
+  String get support_faq_a3 => 'نعم، جميع المعاملات مشفرة بتقنية SSL 256 بت.';
+
+  @override
+  String get support_faq_q4 => 'متى يصل طلبي؟';
+
+  @override
+  String get support_faq_a4 => 'عادةً خلال 2-5 أيام عمل داخل المملكة.';
+
+  @override
+  String get support_faq_q5 => 'كيف أستخدم كوبون الخصم؟';
+
+  @override
+  String get support_faq_a5 =>
+      'أدخل رمز الكوبون في صفحة الدفع قبل تأكيد الطلب.';
+
+  @override
+  String get privacy_title => 'سياسة الخصوصية';
+
+  @override
+  String get privacy_data_section => 'جمع البيانات واستخدامها';
+
+  @override
+  String get privacy_payment_section => 'أمان المدفوعات';
+
+  @override
+  String get privacy_rights_section => 'حقوقك';
 
   @override
   String get address_title => 'العناوين';
@@ -458,6 +742,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get address_saved => 'تم حفظ العنوان';
 
   @override
+  String get address_empty => 'لا يوجد عناوين محفوظة';
+
+  @override
+  String get address_empty_desc => 'أضف عنواناً لتسريع عملية الطلب.';
+
+  @override
+  String get address_delete_confirm => 'هل تريد حذف هذا العنوان؟';
+
+  @override
   String get notifications_title => 'الإشعارات';
 
   @override
@@ -465,6 +758,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get notifications_mark_read => 'تعليم الكل كمقروء';
+
+  @override
+  String get notifications_order_update => 'تحديث الطلب';
+
+  @override
+  String get notifications_promo => 'عروض خاصة';
 
   @override
   String get settings_title => 'الإعدادات';
@@ -497,6 +796,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settings_version => 'إصدار التطبيق';
 
   @override
+  String get settings_currency => 'العملة';
+
+  @override
   String get search_hint => 'عن ماذا تبحث؟';
 
   @override
@@ -526,6 +828,35 @@ class AppLocalizationsAr extends AppLocalizations {
   String get search_sort_popular => 'الأكثر شعبية';
 
   @override
+  String get search_recent => 'عمليات البحث الأخيرة';
+
+  @override
+  String get search_clear_history => 'مسح السجل';
+
+  @override
+  String get search_no_history => 'لا يوجد سجل بحث';
+
+  @override
+  String get search_categories => 'الفئات';
+
+  @override
+  String search_all_results(String query) {
+    return 'جميع النتائج لـ \"$query\"';
+  }
+
+  @override
+  String get search_filter_price_range => 'نطاق السعر';
+
+  @override
+  String get search_filter_min_rating => 'أدنى تقييم';
+
+  @override
+  String get search_filter_category => 'الفئة';
+
+  @override
+  String get search_filter_reset => 'إعادة التعيين';
+
+  @override
   String get review_write => 'كتابة تقييم';
 
   @override
@@ -544,4 +875,47 @@ class AppLocalizationsAr extends AppLocalizations {
   String review_rating_label(int count) {
     return '$count تقييم';
   }
+
+  @override
+  String get review_submitted => 'تم إرسال تقييمك بنجاح';
+
+  @override
+  String get review_helpful => 'هل كان هذا مفيداً؟';
+
+  @override
+  String get coupon_title => 'الكوبونات والعروض';
+
+  @override
+  String get coupon_invalid => 'رمز الكوبون غير صالح';
+
+  @override
+  String get coupon_expired => 'انتهت صلاحية هذا الكوبون';
+
+  @override
+  String coupon_min_order(double amount) {
+    return 'الحد الأدنى للطلب $amount ر.س';
+  }
+
+  @override
+  String coupon_applied(String code) {
+    return 'تم تطبيق كوبون $code';
+  }
+
+  @override
+  String get coupon_removed => 'تم إزالة الكوبون';
+
+  @override
+  String get admin_dashboard => 'لوحة التحكم';
+
+  @override
+  String get admin_products => 'المنتجات';
+
+  @override
+  String get admin_orders => 'الطلبات';
+
+  @override
+  String get admin_users => 'المستخدمون';
+
+  @override
+  String get admin_analytics => 'التحليلات';
 }

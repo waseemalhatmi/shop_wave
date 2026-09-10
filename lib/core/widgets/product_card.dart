@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../../core/extensions/context_ext.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../core/extensions/context_ext.dart';
-import '../../../features/products/domain/entities/product_entity.dart';
+import '../../../core/utils/app_haptics.dart';
 import '../../../features/favorites/presentation/providers/favorites_providers.dart';
+import '../../../features/products/domain/entities/product_entity.dart';
 
 /// Reusable product card used across Home, Categories, Search, etc.
 ///
@@ -41,6 +44,7 @@ class ProductCard extends ConsumerWidget {
     // Use passed onFavoriteToggle or default to toggling the provider
     final toggleAction = onFavoriteToggle ??
         () {
+          AppHaptics.light();
           ref.read(favoritesProvider.notifier).toggleFavorite(product);
         };
 
@@ -87,9 +91,10 @@ class ProductCard extends ConsumerWidget {
     );
 
     return GestureDetector(
-      onTap: () => context.push(
-        AppRoutes.productDetailPath(product.id),
-      ),
+      onTap: () {
+        AppHaptics.light();
+        context.push(AppRoutes.productDetailPath(product.id));
+      },
       child: Container(
         width: wide ? null : _cardWidth,
         decoration: BoxDecoration(
@@ -316,7 +321,14 @@ class _FavoriteButton extends StatelessWidget {
             isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
             size: 18,
             color: isFavorite ? AppColors.badge : AppColors.onSurfaceVariantLight,
-          ),
+          )
+              .animate(target: isFavorite ? 1 : 0)
+              .scale(
+                begin: const Offset(0.85, 0.85),
+                end: const Offset(1.0, 1.0),
+                duration: 200.ms,
+                curve: Curves.elasticOut,
+              ),
         ),
       );
 }

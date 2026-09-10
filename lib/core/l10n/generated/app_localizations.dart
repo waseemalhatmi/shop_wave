@@ -224,6 +224,84 @@ abstract class AppLocalizations {
   /// **'Free'**
   String get general_free;
 
+  /// No description provided for @general_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get general_confirm;
+
+  /// No description provided for @general_close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get general_close;
+
+  /// No description provided for @general_clear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get general_clear;
+
+  /// No description provided for @general_apply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get general_apply;
+
+  /// No description provided for @general_copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get general_copy;
+
+  /// No description provided for @general_copied.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied!'**
+  String get general_copied;
+
+  /// No description provided for @general_share.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get general_share;
+
+  /// No description provided for @general_add.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get general_add;
+
+  /// No description provided for @general_remove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get general_remove;
+
+  /// No description provided for @general_update.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get general_update;
+
+  /// No description provided for @general_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Operation successful'**
+  String get general_success;
+
+  /// No description provided for @general_view_all.
+  ///
+  /// In en, this message translates to:
+  /// **'View All'**
+  String get general_view_all;
+
+  /// No description provided for @general_go_home.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to Home'**
+  String get general_go_home;
+
   /// No description provided for @onboarding_skip.
   ///
   /// In en, this message translates to:
@@ -290,6 +368,12 @@ abstract class AppLocalizations {
   /// **'Log Out'**
   String get auth_logout;
 
+  /// No description provided for @auth_logout_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to log out?'**
+  String get auth_logout_confirm;
+
   /// No description provided for @auth_email.
   ///
   /// In en, this message translates to:
@@ -337,6 +421,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Passwords do not match'**
   String get auth_password_mismatch;
+
+  /// No description provided for @auth_password_new.
+  ///
+  /// In en, this message translates to:
+  /// **'New Password'**
+  String get auth_password_new;
+
+  /// No description provided for @auth_password_new_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your new password'**
+  String get auth_password_new_hint;
+
+  /// No description provided for @auth_password_current.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Password'**
+  String get auth_password_current;
+
+  /// No description provided for @auth_password_current_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your current password'**
+  String get auth_password_current_hint;
+
+  /// No description provided for @auth_password_updated.
+  ///
+  /// In en, this message translates to:
+  /// **'Password updated successfully'**
+  String get auth_password_updated;
 
   /// No description provided for @auth_full_name.
   ///
@@ -500,6 +614,30 @@ abstract class AppLocalizations {
   /// **'Best Sellers'**
   String get home_best_sellers;
 
+  /// No description provided for @home_greeting_morning.
+  ///
+  /// In en, this message translates to:
+  /// **'Good morning'**
+  String get home_greeting_morning;
+
+  /// No description provided for @home_greeting_afternoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Good afternoon'**
+  String get home_greeting_afternoon;
+
+  /// No description provided for @home_greeting_evening.
+  ///
+  /// In en, this message translates to:
+  /// **'Good evening'**
+  String get home_greeting_evening;
+
+  /// No description provided for @home_no_products.
+  ///
+  /// In en, this message translates to:
+  /// **'No products in this category'**
+  String get home_no_products;
+
   /// No description provided for @product_add_to_cart.
   ///
   /// In en, this message translates to:
@@ -590,6 +728,18 @@ abstract class AppLocalizations {
   /// **'Removed from favorites'**
   String get product_removed_from_favorites;
 
+  /// No description provided for @product_items_left.
+  ///
+  /// In en, this message translates to:
+  /// **'Only {count} left'**
+  String product_items_left(int count);
+
+  /// No description provided for @product_discount_badge.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% OFF'**
+  String product_discount_badge(int percent);
+
   /// No description provided for @cart_title.
   ///
   /// In en, this message translates to:
@@ -649,6 +799,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} Items'**
   String cart_items(int count);
+
+  /// No description provided for @cart_remove_item.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Item'**
+  String get cart_remove_item;
+
+  /// No description provided for @cart_remove_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove this item from your cart?'**
+  String get cart_remove_confirm;
+
+  /// No description provided for @cart_coupon_remove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Coupon'**
+  String get cart_coupon_remove;
 
   /// No description provided for @checkout_title.
   ///
@@ -716,6 +884,18 @@ abstract class AppLocalizations {
   /// **'Credit / Debit Card'**
   String get checkout_card;
 
+  /// No description provided for @checkout_no_address.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a delivery address'**
+  String get checkout_no_address;
+
+  /// No description provided for @checkout_processing.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing your order...'**
+  String get checkout_processing;
+
   /// No description provided for @order_confirmed_title.
   ///
   /// In en, this message translates to:
@@ -751,6 +931,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No orders yet'**
   String get orders_empty;
+
+  /// No description provided for @orders_empty_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'You haven\'t placed any orders yet. Start shopping now!'**
+  String get orders_empty_desc;
 
   /// No description provided for @order_detail_title.
   ///
@@ -799,6 +985,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Refunded'**
   String get order_status_refunded;
+
+  /// No description provided for @order_cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Order'**
+  String get order_cancel;
+
+  /// No description provided for @order_cancel_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to cancel this order?'**
+  String get order_cancel_confirm;
+
+  /// No description provided for @order_cancel_reason.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation Reason'**
+  String get order_cancel_reason;
+
+  /// No description provided for @order_cancel_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Order cancelled successfully'**
+  String get order_cancel_success;
+
+  /// No description provided for @order_reorder.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-order'**
+  String get order_reorder;
+
+  /// No description provided for @order_reorder_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Items added to your cart!'**
+  String get order_reorder_success;
+
+  /// No description provided for @order_live_tracking.
+  ///
+  /// In en, this message translates to:
+  /// **'Live Tracking'**
+  String get order_live_tracking;
+
+  /// No description provided for @order_filter_all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get order_filter_all;
+
+  /// No description provided for @order_filter_active.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get order_filter_active;
+
+  /// No description provided for @order_filter_completed.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get order_filter_completed;
+
+  /// No description provided for @order_filter_cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get order_filter_cancelled;
+
+  /// No description provided for @order_number.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Number'**
+  String get order_number;
+
+  /// No description provided for @order_date.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Date'**
+  String get order_date;
+
+  /// No description provided for @order_items_count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} items'**
+  String order_items_count(int count);
 
   /// No description provided for @favorites_title.
   ///
@@ -883,6 +1153,282 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Privacy Policy'**
   String get profile_privacy;
+
+  /// No description provided for @profile_security.
+  ///
+  /// In en, this message translates to:
+  /// **'Security & Password'**
+  String get profile_security;
+
+  /// No description provided for @profile_stat_orders.
+  ///
+  /// In en, this message translates to:
+  /// **'Orders'**
+  String get profile_stat_orders;
+
+  /// No description provided for @profile_stat_wishlist.
+  ///
+  /// In en, this message translates to:
+  /// **'Wishlist'**
+  String get profile_stat_wishlist;
+
+  /// No description provided for @profile_stat_reviews.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviews'**
+  String get profile_stat_reviews;
+
+  /// No description provided for @profile_my_reviews.
+  ///
+  /// In en, this message translates to:
+  /// **'My Reviews'**
+  String get profile_my_reviews;
+
+  /// No description provided for @profile_reviews_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'You have submitted {count} product review(s) so far.'**
+  String profile_reviews_desc(int count);
+
+  /// No description provided for @profile_verified_email.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified Email'**
+  String get profile_verified_email;
+
+  /// No description provided for @profile_change_password.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Password'**
+  String get profile_change_password;
+
+  /// No description provided for @profile_update_password.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Password'**
+  String get profile_update_password;
+
+  /// No description provided for @profile_password_weak.
+  ///
+  /// In en, this message translates to:
+  /// **'Weak'**
+  String get profile_password_weak;
+
+  /// No description provided for @profile_password_medium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get profile_password_medium;
+
+  /// No description provided for @profile_password_strong.
+  ///
+  /// In en, this message translates to:
+  /// **'Strong'**
+  String get profile_password_strong;
+
+  /// No description provided for @profile_two_factor.
+  ///
+  /// In en, this message translates to:
+  /// **'Two-Factor Authentication'**
+  String get profile_two_factor;
+
+  /// No description provided for @profile_two_factor_enabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Enabled'**
+  String get profile_two_factor_enabled;
+
+  /// No description provided for @profile_two_factor_disabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Disabled'**
+  String get profile_two_factor_disabled;
+
+  /// No description provided for @profile_active_sessions.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Sessions'**
+  String get profile_active_sessions;
+
+  /// No description provided for @profile_email_verified.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified'**
+  String get profile_email_verified;
+
+  /// No description provided for @profile_email_not_verified.
+  ///
+  /// In en, this message translates to:
+  /// **'Not Verified'**
+  String get profile_email_not_verified;
+
+  /// No description provided for @security_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Security & Password'**
+  String get security_title;
+
+  /// No description provided for @security_password_section.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Password'**
+  String get security_password_section;
+
+  /// No description provided for @security_strength_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Strength'**
+  String get security_strength_title;
+
+  /// No description provided for @security_req_length.
+  ///
+  /// In en, this message translates to:
+  /// **'At least 8 characters'**
+  String get security_req_length;
+
+  /// No description provided for @security_req_case.
+  ///
+  /// In en, this message translates to:
+  /// **'Upper & lowercase letters'**
+  String get security_req_case;
+
+  /// No description provided for @security_req_number.
+  ///
+  /// In en, this message translates to:
+  /// **'At least one number'**
+  String get security_req_number;
+
+  /// No description provided for @security_req_special.
+  ///
+  /// In en, this message translates to:
+  /// **'One special character (!@#...).'**
+  String get security_req_special;
+
+  /// No description provided for @support_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Help & Support'**
+  String get support_title;
+
+  /// No description provided for @support_faq.
+  ///
+  /// In en, this message translates to:
+  /// **'Frequently Asked Questions'**
+  String get support_faq;
+
+  /// No description provided for @support_contact.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact Us'**
+  String get support_contact;
+
+  /// No description provided for @support_whatsapp.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp'**
+  String get support_whatsapp;
+
+  /// No description provided for @support_email.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get support_email;
+
+  /// No description provided for @support_hotline.
+  ///
+  /// In en, this message translates to:
+  /// **'Toll-Free Hotline'**
+  String get support_hotline;
+
+  /// No description provided for @support_copy_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied'**
+  String get support_copy_success;
+
+  /// No description provided for @support_faq_q1.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I track my order?'**
+  String get support_faq_q1;
+
+  /// No description provided for @support_faq_a1.
+  ///
+  /// In en, this message translates to:
+  /// **'You can track your order from the \'My Orders\' section in your profile.'**
+  String get support_faq_a1;
+
+  /// No description provided for @support_faq_q2.
+  ///
+  /// In en, this message translates to:
+  /// **'What is your return policy?'**
+  String get support_faq_q2;
+
+  /// No description provided for @support_faq_a2.
+  ///
+  /// In en, this message translates to:
+  /// **'You can return any product within 14 days of receiving it.'**
+  String get support_faq_a2;
+
+  /// No description provided for @support_faq_q3.
+  ///
+  /// In en, this message translates to:
+  /// **'Is online payment secure?'**
+  String get support_faq_q3;
+
+  /// No description provided for @support_faq_a3.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, all transactions are encrypted with 256-bit SSL technology.'**
+  String get support_faq_a3;
+
+  /// No description provided for @support_faq_q4.
+  ///
+  /// In en, this message translates to:
+  /// **'When will my order arrive?'**
+  String get support_faq_q4;
+
+  /// No description provided for @support_faq_a4.
+  ///
+  /// In en, this message translates to:
+  /// **'Usually within 2-5 business days within the Kingdom.'**
+  String get support_faq_a4;
+
+  /// No description provided for @support_faq_q5.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I use a discount coupon?'**
+  String get support_faq_q5;
+
+  /// No description provided for @support_faq_a5.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the coupon code at checkout before confirming your order.'**
+  String get support_faq_a5;
+
+  /// No description provided for @privacy_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacy_title;
+
+  /// No description provided for @privacy_data_section.
+  ///
+  /// In en, this message translates to:
+  /// **'Data Collection & Use'**
+  String get privacy_data_section;
+
+  /// No description provided for @privacy_payment_section.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Security'**
+  String get privacy_payment_section;
+
+  /// No description provided for @privacy_rights_section.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Rights'**
+  String get privacy_rights_section;
 
   /// No description provided for @address_title.
   ///
@@ -974,6 +1520,24 @@ abstract class AppLocalizations {
   /// **'Address saved'**
   String get address_saved;
 
+  /// No description provided for @address_empty.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved addresses'**
+  String get address_empty;
+
+  /// No description provided for @address_empty_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Add an address to speed up checkout.'**
+  String get address_empty_desc;
+
+  /// No description provided for @address_delete_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this address?'**
+  String get address_delete_confirm;
+
   /// No description provided for @notifications_title.
   ///
   /// In en, this message translates to:
@@ -991,6 +1555,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Mark All as Read'**
   String get notifications_mark_read;
+
+  /// No description provided for @notifications_order_update.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Update'**
+  String get notifications_order_update;
+
+  /// No description provided for @notifications_promo.
+  ///
+  /// In en, this message translates to:
+  /// **'Special Offers'**
+  String get notifications_promo;
 
   /// No description provided for @settings_title.
   ///
@@ -1052,6 +1628,12 @@ abstract class AppLocalizations {
   /// **'App Version'**
   String get settings_version;
 
+  /// No description provided for @settings_currency.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency'**
+  String get settings_currency;
+
   /// No description provided for @search_hint.
   ///
   /// In en, this message translates to:
@@ -1106,6 +1688,60 @@ abstract class AppLocalizations {
   /// **'Most Popular'**
   String get search_sort_popular;
 
+  /// No description provided for @search_recent.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Searches'**
+  String get search_recent;
+
+  /// No description provided for @search_clear_history.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear History'**
+  String get search_clear_history;
+
+  /// No description provided for @search_no_history.
+  ///
+  /// In en, this message translates to:
+  /// **'No search history'**
+  String get search_no_history;
+
+  /// No description provided for @search_categories.
+  ///
+  /// In en, this message translates to:
+  /// **'Categories'**
+  String get search_categories;
+
+  /// No description provided for @search_all_results.
+  ///
+  /// In en, this message translates to:
+  /// **'All results for \"{query}\"'**
+  String search_all_results(String query);
+
+  /// No description provided for @search_filter_price_range.
+  ///
+  /// In en, this message translates to:
+  /// **'Price Range'**
+  String get search_filter_price_range;
+
+  /// No description provided for @search_filter_min_rating.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum Rating'**
+  String get search_filter_min_rating;
+
+  /// No description provided for @search_filter_category.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get search_filter_category;
+
+  /// No description provided for @search_filter_reset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Filters'**
+  String get search_filter_reset;
+
   /// No description provided for @review_write.
   ///
   /// In en, this message translates to:
@@ -1141,6 +1777,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} ratings'**
   String review_rating_label(int count);
+
+  /// No description provided for @review_submitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Your review was submitted successfully'**
+  String get review_submitted;
+
+  /// No description provided for @review_helpful.
+  ///
+  /// In en, this message translates to:
+  /// **'Was this helpful?'**
+  String get review_helpful;
+
+  /// No description provided for @coupon_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Coupons & Offers'**
+  String get coupon_title;
+
+  /// No description provided for @coupon_invalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid coupon code'**
+  String get coupon_invalid;
+
+  /// No description provided for @coupon_expired.
+  ///
+  /// In en, this message translates to:
+  /// **'This coupon has expired'**
+  String get coupon_expired;
+
+  /// No description provided for @coupon_min_order.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum order {amount} SAR'**
+  String coupon_min_order(double amount);
+
+  /// No description provided for @coupon_applied.
+  ///
+  /// In en, this message translates to:
+  /// **'Coupon {code} applied'**
+  String coupon_applied(String code);
+
+  /// No description provided for @coupon_removed.
+  ///
+  /// In en, this message translates to:
+  /// **'Coupon removed'**
+  String get coupon_removed;
+
+  /// No description provided for @admin_dashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard'**
+  String get admin_dashboard;
+
+  /// No description provided for @admin_products.
+  ///
+  /// In en, this message translates to:
+  /// **'Products'**
+  String get admin_products;
+
+  /// No description provided for @admin_orders.
+  ///
+  /// In en, this message translates to:
+  /// **'Orders'**
+  String get admin_orders;
+
+  /// No description provided for @admin_users.
+  ///
+  /// In en, this message translates to:
+  /// **'Users'**
+  String get admin_users;
+
+  /// No description provided for @admin_analytics.
+  ///
+  /// In en, this message translates to:
+  /// **'Analytics'**
+  String get admin_analytics;
 }
 
 class _AppLocalizationsDelegate

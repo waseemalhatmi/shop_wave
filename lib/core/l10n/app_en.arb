@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "@@last_modified": "2026-08-05",
+  "@@last_modified": "2026-09-10",
 
   "appName": "ShopWave",
   "@appName": { "description": "The application name" },
@@ -25,6 +25,19 @@
   "general_see_all": "See All",
   "general_sar": "SAR",
   "general_free": "Free",
+  "general_confirm": "Confirm",
+  "general_close": "Close",
+  "general_clear": "Clear",
+  "general_apply": "Apply",
+  "general_copy": "Copy",
+  "general_copied": "Copied!",
+  "general_share": "Share",
+  "general_add": "Add",
+  "general_remove": "Remove",
+  "general_update": "Update",
+  "general_success": "Operation successful",
+  "general_view_all": "View All",
+  "general_go_home": "Go to Home",
 
   "onboarding_skip": "Skip",
   "onboarding_get_started": "Get Started",
@@ -38,6 +51,7 @@
   "auth_login": "Log In",
   "auth_register": "Sign Up",
   "auth_logout": "Log Out",
+  "auth_logout_confirm": "Are you sure you want to log out?",
   "auth_email": "Email Address",
   "auth_email_hint": "Enter your email",
   "auth_email_invalid": "Please enter a valid email address",
@@ -46,6 +60,11 @@
   "auth_password_min": "Password must be at least 8 characters",
   "auth_password_confirm": "Confirm Password",
   "auth_password_mismatch": "Passwords do not match",
+  "auth_password_new": "New Password",
+  "auth_password_new_hint": "Enter your new password",
+  "auth_password_current": "Current Password",
+  "auth_password_current_hint": "Enter your current password",
+  "auth_password_updated": "Password updated successfully",
   "auth_full_name": "Full Name",
   "auth_full_name_hint": "Enter your full name",
   "auth_full_name_min": "Name must be at least 2 characters",
@@ -85,6 +104,10 @@
   "home_featured": "Featured Products",
   "home_new_arrivals": "New Arrivals",
   "home_best_sellers": "Best Sellers",
+  "home_greeting_morning": "Good morning",
+  "home_greeting_afternoon": "Good afternoon",
+  "home_greeting_evening": "Good evening",
+  "home_no_products": "No products in this category",
 
   "product_add_to_cart": "Add to Cart",
   "product_buy_now": "Buy Now",
@@ -101,6 +124,18 @@
   "product_added_to_cart": "Added to cart!",
   "product_added_to_favorites": "Added to favorites",
   "product_removed_from_favorites": "Removed from favorites",
+  "product_items_left": "Only {count} left",
+  "@product_items_left": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "product_discount_badge": "{percent}% OFF",
+  "@product_discount_badge": {
+    "placeholders": {
+      "percent": { "type": "int" }
+    }
+  },
 
   "cart_title": "My Cart",
   "cart_empty": "Your cart is empty",
@@ -117,6 +152,9 @@
       "count": { "type": "int" }
     }
   },
+  "cart_remove_item": "Remove Item",
+  "cart_remove_confirm": "Remove this item from your cart?",
+  "cart_coupon_remove": "Remove Coupon",
 
   "checkout_title": "Checkout",
   "checkout_delivery_address": "Delivery Address",
@@ -129,6 +167,8 @@
   "checkout_place_order": "Place Order",
   "checkout_cash_on_delivery": "Cash on Delivery",
   "checkout_card": "Credit / Debit Card",
+  "checkout_no_address": "Please select a delivery address",
+  "checkout_processing": "Processing your order...",
 
   "order_confirmed_title": "Order Confirmed!",
   "order_confirmed_desc": "Your order #{orderId} has been placed successfully.",
@@ -141,6 +181,7 @@
   "order_continue_shopping": "Continue Shopping",
   "orders_title": "My Orders",
   "orders_empty": "No orders yet",
+  "orders_empty_desc": "You haven't placed any orders yet. Start shopping now!",
   "order_detail_title": "Order Details",
   "order_status_pending": "Pending",
   "order_status_confirmed": "Confirmed",
@@ -149,6 +190,25 @@
   "order_status_delivered": "Delivered",
   "order_status_cancelled": "Cancelled",
   "order_status_refunded": "Refunded",
+  "order_cancel": "Cancel Order",
+  "order_cancel_confirm": "Are you sure you want to cancel this order?",
+  "order_cancel_reason": "Cancellation Reason",
+  "order_cancel_success": "Order cancelled successfully",
+  "order_reorder": "Re-order",
+  "order_reorder_success": "Items added to your cart!",
+  "order_live_tracking": "Live Tracking",
+  "order_filter_all": "All",
+  "order_filter_active": "Active",
+  "order_filter_completed": "Completed",
+  "order_filter_cancelled": "Cancelled",
+  "order_number": "Order Number",
+  "order_date": "Order Date",
+  "order_items_count": "{count} items",
+  "@order_items_count": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
 
   "favorites_title": "My Favorites",
   "favorites_empty": "No favorites yet",
@@ -165,6 +225,60 @@
   "profile_account": "Account",
   "profile_preferences": "Preferences",
   "profile_privacy": "Privacy Policy",
+  "profile_security": "Security & Password",
+  "profile_stat_orders": "Orders",
+  "profile_stat_wishlist": "Wishlist",
+  "profile_stat_reviews": "Reviews",
+  "profile_my_reviews": "My Reviews",
+  "profile_reviews_desc": "You have submitted {count} product review(s) so far.",
+  "@profile_reviews_desc": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "profile_verified_email": "Verified Email",
+  "profile_change_password": "Change Password",
+  "profile_update_password": "Update Password",
+  "profile_password_weak": "Weak",
+  "profile_password_medium": "Medium",
+  "profile_password_strong": "Strong",
+  "profile_two_factor": "Two-Factor Authentication",
+  "profile_two_factor_enabled": "Enabled",
+  "profile_two_factor_disabled": "Disabled",
+  "profile_active_sessions": "Active Sessions",
+  "profile_email_verified": "Verified",
+  "profile_email_not_verified": "Not Verified",
+
+  "security_title": "Security & Password",
+  "security_password_section": "Change Password",
+  "security_strength_title": "Strength",
+  "security_req_length": "At least 8 characters",
+  "security_req_case": "Upper & lowercase letters",
+  "security_req_number": "At least one number",
+  "security_req_special": "One special character (!@#...).",
+
+  "support_title": "Help & Support",
+  "support_faq": "Frequently Asked Questions",
+  "support_contact": "Contact Us",
+  "support_whatsapp": "WhatsApp",
+  "support_email": "Email",
+  "support_hotline": "Toll-Free Hotline",
+  "support_copy_success": "Copied",
+  "support_faq_q1": "How do I track my order?",
+  "support_faq_a1": "You can track your order from the 'My Orders' section in your profile.",
+  "support_faq_q2": "What is your return policy?",
+  "support_faq_a2": "You can return any product within 14 days of receiving it.",
+  "support_faq_q3": "Is online payment secure?",
+  "support_faq_a3": "Yes, all transactions are encrypted with 256-bit SSL technology.",
+  "support_faq_q4": "When will my order arrive?",
+  "support_faq_a4": "Usually within 2-5 business days within the Kingdom.",
+  "support_faq_q5": "How do I use a discount coupon?",
+  "support_faq_a5": "Enter the coupon code at checkout before confirming your order.",
+
+  "privacy_title": "Privacy Policy",
+  "privacy_data_section": "Data Collection & Use",
+  "privacy_payment_section": "Payment Security",
+  "privacy_rights_section": "Your Rights",
 
   "address_title": "Addresses",
   "address_add": "Add Address",
@@ -181,10 +295,15 @@
   "address_postal": "Postal Code",
   "address_building": "Building / Apartment",
   "address_saved": "Address saved",
+  "address_empty": "No saved addresses",
+  "address_empty_desc": "Add an address to speed up checkout.",
+  "address_delete_confirm": "Delete this address?",
 
   "notifications_title": "Notifications",
   "notifications_empty": "No notifications",
   "notifications_mark_read": "Mark All as Read",
+  "notifications_order_update": "Order Update",
+  "notifications_promo": "Special Offers",
 
   "settings_title": "Settings",
   "settings_theme": "Theme",
@@ -196,6 +315,7 @@
   "settings_language_ar": "Arabic",
   "settings_notifications": "Notifications",
   "settings_version": "App Version",
+  "settings_currency": "Currency",
 
   "search_hint": "What are you looking for?",
   "search_empty": "No results for \"{query}\"",
@@ -211,6 +331,20 @@
   "search_sort_price_desc": "Price: High to Low",
   "search_sort_rating": "Top Rated",
   "search_sort_popular": "Most Popular",
+  "search_recent": "Recent Searches",
+  "search_clear_history": "Clear History",
+  "search_no_history": "No search history",
+  "search_categories": "Categories",
+  "search_all_results": "All results for \"{query}\"",
+  "@search_all_results": {
+    "placeholders": {
+      "query": { "type": "String" }
+    }
+  },
+  "search_filter_price_range": "Price Range",
+  "search_filter_min_rating": "Minimum Rating",
+  "search_filter_category": "Category",
+  "search_filter_reset": "Reset Filters",
 
   "review_write": "Write a Review",
   "review_title": "Review Title",
@@ -222,5 +356,30 @@
     "placeholders": {
       "count": { "type": "int" }
     }
-  }
+  },
+  "review_submitted": "Your review was submitted successfully",
+  "review_helpful": "Was this helpful?",
+
+  "coupon_title": "Coupons & Offers",
+  "coupon_invalid": "Invalid coupon code",
+  "coupon_expired": "This coupon has expired",
+  "coupon_min_order": "Minimum order {amount} SAR",
+  "@coupon_min_order": {
+    "placeholders": {
+      "amount": { "type": "double" }
+    }
+  },
+  "coupon_applied": "Coupon {code} applied",
+  "@coupon_applied": {
+    "placeholders": {
+      "code": { "type": "String" }
+    }
+  },
+  "coupon_removed": "Coupon removed",
+
+  "admin_dashboard": "Dashboard",
+  "admin_products": "Products",
+  "admin_orders": "Orders",
+  "admin_users": "Users",
+  "admin_analytics": "Analytics"
 }

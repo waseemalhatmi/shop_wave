@@ -1,6 +1,6 @@
 {
   "@@locale": "ar",
-  "@@last_modified": "2026-08-05",
+  "@@last_modified": "2026-09-10",
 
   "appName": "شوب ويف",
   "general_ok": "حسناً",
@@ -23,6 +23,19 @@
   "general_see_all": "عرض الكل",
   "general_sar": "ر.س",
   "general_free": "مجاني",
+  "general_confirm": "تأكيد",
+  "general_close": "إغلاق",
+  "general_clear": "مسح",
+  "general_apply": "تطبيق",
+  "general_copy": "نسخ",
+  "general_copied": "تم النسخ!",
+  "general_share": "مشاركة",
+  "general_add": "إضافة",
+  "general_remove": "إزالة",
+  "general_update": "تحديث",
+  "general_success": "تمت العملية بنجاح",
+  "general_view_all": "عرض الكل",
+  "general_go_home": "العودة للرئيسية",
 
   "onboarding_skip": "تخطي",
   "onboarding_get_started": "ابدأ الآن",
@@ -36,6 +49,7 @@
   "auth_login": "تسجيل الدخول",
   "auth_register": "إنشاء حساب",
   "auth_logout": "تسجيل الخروج",
+  "auth_logout_confirm": "هل أنت متأكد من تسجيل الخروج؟",
   "auth_email": "البريد الإلكتروني",
   "auth_email_hint": "أدخل بريدك الإلكتروني",
   "auth_email_invalid": "يرجى إدخال بريد إلكتروني صحيح",
@@ -44,6 +58,11 @@
   "auth_password_min": "يجب أن تكون كلمة المرور 8 أحرف على الأقل",
   "auth_password_confirm": "تأكيد كلمة المرور",
   "auth_password_mismatch": "كلمتا المرور غير متطابقتين",
+  "auth_password_new": "كلمة المرور الجديدة",
+  "auth_password_new_hint": "أدخل كلمة المرور الجديدة",
+  "auth_password_current": "كلمة المرور الحالية",
+  "auth_password_current_hint": "أدخل كلمة المرور الحالية",
+  "auth_password_updated": "تم تحديث كلمة المرور بنجاح",
   "auth_full_name": "الاسم الكامل",
   "auth_full_name_hint": "أدخل اسمك الكامل",
   "auth_full_name_min": "يجب أن يكون الاسم حرفين على الأقل",
@@ -83,6 +102,10 @@
   "home_featured": "منتجات مميزة",
   "home_new_arrivals": "وصل حديثاً",
   "home_best_sellers": "الأكثر مبيعاً",
+  "home_greeting_morning": "صباح الخير",
+  "home_greeting_afternoon": "مساء الخير",
+  "home_greeting_evening": "مساء النور",
+  "home_no_products": "لا توجد منتجات في هذه الفئة",
 
   "product_add_to_cart": "أضف إلى السلة",
   "product_buy_now": "اشتري الآن",
@@ -99,6 +122,18 @@
   "product_added_to_cart": "تمت الإضافة إلى السلة!",
   "product_added_to_favorites": "أضيف إلى المفضلة",
   "product_removed_from_favorites": "حُذف من المفضلة",
+  "product_items_left": "تبقى {count} فقط",
+  "@product_items_left": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "product_discount_badge": "خصم {percent}%",
+  "@product_discount_badge": {
+    "placeholders": {
+      "percent": { "type": "int" }
+    }
+  },
 
   "cart_title": "سلة التسوق",
   "cart_empty": "سلتك فارغة",
@@ -115,6 +150,9 @@
       "count": { "type": "int" }
     }
   },
+  "cart_remove_item": "إزالة العنصر",
+  "cart_remove_confirm": "هل تريد إزالة هذا العنصر من السلة؟",
+  "cart_coupon_remove": "إزالة الكوبون",
 
   "checkout_title": "إتمام الطلب",
   "checkout_delivery_address": "عنوان التوصيل",
@@ -127,6 +165,8 @@
   "checkout_place_order": "تأكيد الطلب",
   "checkout_cash_on_delivery": "الدفع عند الاستلام",
   "checkout_card": "بطاقة ائتمانية / مدى",
+  "checkout_no_address": "يرجى اختيار عنوان التوصيل",
+  "checkout_processing": "جارٍ معالجة طلبك...",
 
   "order_confirmed_title": "تم تأكيد طلبك!",
   "order_confirmed_desc": "تم وضع طلبك #{orderId} بنجاح.",
@@ -139,6 +179,7 @@
   "order_continue_shopping": "مواصلة التسوق",
   "orders_title": "طلباتي",
   "orders_empty": "لا يوجد طلبات بعد",
+  "orders_empty_desc": "لم تقم بأي طلب بعد. ابدأ التسوق الآن!",
   "order_detail_title": "تفاصيل الطلب",
   "order_status_pending": "قيد الانتظار",
   "order_status_confirmed": "مؤكد",
@@ -147,6 +188,25 @@
   "order_status_delivered": "تم التسليم",
   "order_status_cancelled": "ملغي",
   "order_status_refunded": "مُسترد",
+  "order_cancel": "إلغاء الطلب",
+  "order_cancel_confirm": "هل تريد إلغاء هذا الطلب؟",
+  "order_cancel_reason": "سبب الإلغاء",
+  "order_cancel_success": "تم إلغاء الطلب بنجاح",
+  "order_reorder": "إعادة الطلب",
+  "order_reorder_success": "تمت إضافة المنتجات إلى السلة!",
+  "order_live_tracking": "تتبع مباشر",
+  "order_filter_all": "الكل",
+  "order_filter_active": "نشط",
+  "order_filter_completed": "مكتمل",
+  "order_filter_cancelled": "ملغي",
+  "order_number": "رقم الطلب",
+  "order_date": "تاريخ الطلب",
+  "order_items_count": "{count} منتجات",
+  "@order_items_count": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
 
   "favorites_title": "المفضلة",
   "favorites_empty": "لا يوجد مفضلة بعد",
@@ -163,6 +223,60 @@
   "profile_account": "الحساب",
   "profile_preferences": "التفضيلات",
   "profile_privacy": "سياسة الخصوصية",
+  "profile_security": "الأمان وكلمة المرور",
+  "profile_stat_orders": "الطلبات",
+  "profile_stat_wishlist": "المفضلة",
+  "profile_stat_reviews": "التقييمات",
+  "profile_my_reviews": "تقييماتي ومراجعاتي",
+  "profile_reviews_desc": "لقد قمت بكتابة {count} تقييم للمنتجات حتى الآن.",
+  "@profile_reviews_desc": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "profile_verified_email": "بريد إلكتروني موثق",
+  "profile_change_password": "تغيير كلمة المرور",
+  "profile_update_password": "تحديث كلمة المرور",
+  "profile_password_weak": "ضعيف",
+  "profile_password_medium": "متوسط",
+  "profile_password_strong": "قوي",
+  "profile_two_factor": "التحقق بخطوتين",
+  "profile_two_factor_enabled": "مُفعّل",
+  "profile_two_factor_disabled": "غير مُفعّل",
+  "profile_active_sessions": "الجلسات النشطة",
+  "profile_email_verified": "موثق",
+  "profile_email_not_verified": "غير موثق",
+
+  "security_title": "الأمان وكلمة المرور",
+  "security_password_section": "تغيير كلمة المرور",
+  "security_strength_title": "مستوى القوة",
+  "security_req_length": "8 أحرف على الأقل",
+  "security_req_case": "أحرف كبيرة وصغيرة",
+  "security_req_number": "رقم واحد على الأقل",
+  "security_req_special": "رمز خاص واحد (!@#...).",
+
+  "support_title": "المساعدة والدعم",
+  "support_faq": "الأسئلة الشائعة",
+  "support_contact": "تواصل معنا",
+  "support_whatsapp": "واتساب",
+  "support_email": "البريد الإلكتروني",
+  "support_hotline": "الخط الساخن",
+  "support_copy_success": "تم النسخ",
+  "support_faq_q1": "كيف أتتبع طلبي؟",
+  "support_faq_a1": "يمكنك متابعة حالة طلبك من قسم \"طلباتي\" في حسابك.",
+  "support_faq_q2": "ما هي سياسة الإرجاع؟",
+  "support_faq_a2": "يمكنك إرجاع أي منتج خلال 14 يوماً من تاريخ الاستلام.",
+  "support_faq_q3": "هل الدفع الإلكتروني آمن؟",
+  "support_faq_a3": "نعم، جميع المعاملات مشفرة بتقنية SSL 256 بت.",
+  "support_faq_q4": "متى يصل طلبي؟",
+  "support_faq_a4": "عادةً خلال 2-5 أيام عمل داخل المملكة.",
+  "support_faq_q5": "كيف أستخدم كوبون الخصم؟",
+  "support_faq_a5": "أدخل رمز الكوبون في صفحة الدفع قبل تأكيد الطلب.",
+
+  "privacy_title": "سياسة الخصوصية",
+  "privacy_data_section": "جمع البيانات واستخدامها",
+  "privacy_payment_section": "أمان المدفوعات",
+  "privacy_rights_section": "حقوقك",
 
   "address_title": "العناوين",
   "address_add": "إضافة عنوان",
@@ -179,10 +293,15 @@
   "address_postal": "الرمز البريدي",
   "address_building": "المبنى / الشقة",
   "address_saved": "تم حفظ العنوان",
+  "address_empty": "لا يوجد عناوين محفوظة",
+  "address_empty_desc": "أضف عنواناً لتسريع عملية الطلب.",
+  "address_delete_confirm": "هل تريد حذف هذا العنوان؟",
 
   "notifications_title": "الإشعارات",
   "notifications_empty": "لا يوجد إشعارات",
   "notifications_mark_read": "تعليم الكل كمقروء",
+  "notifications_order_update": "تحديث الطلب",
+  "notifications_promo": "عروض خاصة",
 
   "settings_title": "الإعدادات",
   "settings_theme": "المظهر",
@@ -194,6 +313,7 @@
   "settings_language_ar": "العربية",
   "settings_notifications": "الإشعارات",
   "settings_version": "إصدار التطبيق",
+  "settings_currency": "العملة",
 
   "search_hint": "عن ماذا تبحث؟",
   "search_empty": "لا نتائج لـ \"{query}\"",
@@ -209,6 +329,20 @@
   "search_sort_price_desc": "السعر: من الأعلى للأقل",
   "search_sort_rating": "الأعلى تقييماً",
   "search_sort_popular": "الأكثر شعبية",
+  "search_recent": "عمليات البحث الأخيرة",
+  "search_clear_history": "مسح السجل",
+  "search_no_history": "لا يوجد سجل بحث",
+  "search_categories": "الفئات",
+  "search_all_results": "جميع النتائج لـ \"{query}\"",
+  "@search_all_results": {
+    "placeholders": {
+      "query": { "type": "String" }
+    }
+  },
+  "search_filter_price_range": "نطاق السعر",
+  "search_filter_min_rating": "أدنى تقييم",
+  "search_filter_category": "الفئة",
+  "search_filter_reset": "إعادة التعيين",
 
   "review_write": "كتابة تقييم",
   "review_title": "عنوان التقييم",
@@ -220,5 +354,30 @@
     "placeholders": {
       "count": { "type": "int" }
     }
-  }
+  },
+  "review_submitted": "تم إرسال تقييمك بنجاح",
+  "review_helpful": "هل كان هذا مفيداً؟",
+
+  "coupon_title": "الكوبونات والعروض",
+  "coupon_invalid": "رمز الكوبون غير صالح",
+  "coupon_expired": "انتهت صلاحية هذا الكوبون",
+  "coupon_min_order": "الحد الأدنى للطلب {amount} ر.س",
+  "@coupon_min_order": {
+    "placeholders": {
+      "amount": { "type": "double" }
+    }
+  },
+  "coupon_applied": "تم تطبيق كوبون {code}",
+  "@coupon_applied": {
+    "placeholders": {
+      "code": { "type": "String" }
+    }
+  },
+  "coupon_removed": "تم إزالة الكوبون",
+
+  "admin_dashboard": "لوحة التحكم",
+  "admin_products": "المنتجات",
+  "admin_orders": "الطلبات",
+  "admin_users": "المستخدمون",
+  "admin_analytics": "التحليلات"
 }

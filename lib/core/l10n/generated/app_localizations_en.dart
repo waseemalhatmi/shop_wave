@@ -73,6 +73,45 @@ class AppLocalizationsEn extends AppLocalizations {
   String get general_free => 'Free';
 
   @override
+  String get general_confirm => 'Confirm';
+
+  @override
+  String get general_close => 'Close';
+
+  @override
+  String get general_clear => 'Clear';
+
+  @override
+  String get general_apply => 'Apply';
+
+  @override
+  String get general_copy => 'Copy';
+
+  @override
+  String get general_copied => 'Copied!';
+
+  @override
+  String get general_share => 'Share';
+
+  @override
+  String get general_add => 'Add';
+
+  @override
+  String get general_remove => 'Remove';
+
+  @override
+  String get general_update => 'Update';
+
+  @override
+  String get general_success => 'Operation successful';
+
+  @override
+  String get general_view_all => 'View All';
+
+  @override
+  String get general_go_home => 'Go to Home';
+
+  @override
   String get onboarding_skip => 'Skip';
 
   @override
@@ -109,6 +148,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get auth_logout => 'Log Out';
 
   @override
+  String get auth_logout_confirm => 'Are you sure you want to log out?';
+
+  @override
   String get auth_email => 'Email Address';
 
   @override
@@ -131,6 +173,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get auth_password_mismatch => 'Passwords do not match';
+
+  @override
+  String get auth_password_new => 'New Password';
+
+  @override
+  String get auth_password_new_hint => 'Enter your new password';
+
+  @override
+  String get auth_password_current => 'Current Password';
+
+  @override
+  String get auth_password_current_hint => 'Enter your current password';
+
+  @override
+  String get auth_password_updated => 'Password updated successfully';
 
   @override
   String get auth_full_name => 'Full Name';
@@ -218,6 +275,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get home_best_sellers => 'Best Sellers';
 
   @override
+  String get home_greeting_morning => 'Good morning';
+
+  @override
+  String get home_greeting_afternoon => 'Good afternoon';
+
+  @override
+  String get home_greeting_evening => 'Good evening';
+
+  @override
+  String get home_no_products => 'No products in this category';
+
+  @override
   String get product_add_to_cart => 'Add to Cart';
 
   @override
@@ -263,6 +332,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get product_removed_from_favorites => 'Removed from favorites';
 
   @override
+  String product_items_left(int count) {
+    return 'Only $count left';
+  }
+
+  @override
+  String product_discount_badge(int percent) {
+    return '$percent% OFF';
+  }
+
+  @override
   String get cart_title => 'My Cart';
 
   @override
@@ -293,6 +372,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String cart_items(int count) {
     return '$count Items';
   }
+
+  @override
+  String get cart_remove_item => 'Remove Item';
+
+  @override
+  String get cart_remove_confirm => 'Remove this item from your cart?';
+
+  @override
+  String get cart_coupon_remove => 'Remove Coupon';
 
   @override
   String get checkout_title => 'Checkout';
@@ -328,6 +416,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get checkout_card => 'Credit / Debit Card';
 
   @override
+  String get checkout_no_address => 'Please select a delivery address';
+
+  @override
+  String get checkout_processing => 'Processing your order...';
+
+  @override
   String get order_confirmed_title => 'Order Confirmed!';
 
   @override
@@ -346,6 +440,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get orders_empty => 'No orders yet';
+
+  @override
+  String get orders_empty_desc =>
+      'You haven\'t placed any orders yet. Start shopping now!';
 
   @override
   String get order_detail_title => 'Order Details';
@@ -370,6 +468,51 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get order_status_refunded => 'Refunded';
+
+  @override
+  String get order_cancel => 'Cancel Order';
+
+  @override
+  String get order_cancel_confirm =>
+      'Are you sure you want to cancel this order?';
+
+  @override
+  String get order_cancel_reason => 'Cancellation Reason';
+
+  @override
+  String get order_cancel_success => 'Order cancelled successfully';
+
+  @override
+  String get order_reorder => 'Re-order';
+
+  @override
+  String get order_reorder_success => 'Items added to your cart!';
+
+  @override
+  String get order_live_tracking => 'Live Tracking';
+
+  @override
+  String get order_filter_all => 'All';
+
+  @override
+  String get order_filter_active => 'Active';
+
+  @override
+  String get order_filter_completed => 'Completed';
+
+  @override
+  String get order_filter_cancelled => 'Cancelled';
+
+  @override
+  String get order_number => 'Order Number';
+
+  @override
+  String get order_date => 'Order Date';
+
+  @override
+  String order_items_count(int count) {
+    return '$count items';
+  }
 
   @override
   String get favorites_title => 'My Favorites';
@@ -413,6 +556,151 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profile_privacy => 'Privacy Policy';
+
+  @override
+  String get profile_security => 'Security & Password';
+
+  @override
+  String get profile_stat_orders => 'Orders';
+
+  @override
+  String get profile_stat_wishlist => 'Wishlist';
+
+  @override
+  String get profile_stat_reviews => 'Reviews';
+
+  @override
+  String get profile_my_reviews => 'My Reviews';
+
+  @override
+  String profile_reviews_desc(int count) {
+    return 'You have submitted $count product review(s) so far.';
+  }
+
+  @override
+  String get profile_verified_email => 'Verified Email';
+
+  @override
+  String get profile_change_password => 'Change Password';
+
+  @override
+  String get profile_update_password => 'Update Password';
+
+  @override
+  String get profile_password_weak => 'Weak';
+
+  @override
+  String get profile_password_medium => 'Medium';
+
+  @override
+  String get profile_password_strong => 'Strong';
+
+  @override
+  String get profile_two_factor => 'Two-Factor Authentication';
+
+  @override
+  String get profile_two_factor_enabled => 'Enabled';
+
+  @override
+  String get profile_two_factor_disabled => 'Disabled';
+
+  @override
+  String get profile_active_sessions => 'Active Sessions';
+
+  @override
+  String get profile_email_verified => 'Verified';
+
+  @override
+  String get profile_email_not_verified => 'Not Verified';
+
+  @override
+  String get security_title => 'Security & Password';
+
+  @override
+  String get security_password_section => 'Change Password';
+
+  @override
+  String get security_strength_title => 'Strength';
+
+  @override
+  String get security_req_length => 'At least 8 characters';
+
+  @override
+  String get security_req_case => 'Upper & lowercase letters';
+
+  @override
+  String get security_req_number => 'At least one number';
+
+  @override
+  String get security_req_special => 'One special character (!@#...).';
+
+  @override
+  String get support_title => 'Help & Support';
+
+  @override
+  String get support_faq => 'Frequently Asked Questions';
+
+  @override
+  String get support_contact => 'Contact Us';
+
+  @override
+  String get support_whatsapp => 'WhatsApp';
+
+  @override
+  String get support_email => 'Email';
+
+  @override
+  String get support_hotline => 'Toll-Free Hotline';
+
+  @override
+  String get support_copy_success => 'Copied';
+
+  @override
+  String get support_faq_q1 => 'How do I track my order?';
+
+  @override
+  String get support_faq_a1 =>
+      'You can track your order from the \'My Orders\' section in your profile.';
+
+  @override
+  String get support_faq_q2 => 'What is your return policy?';
+
+  @override
+  String get support_faq_a2 =>
+      'You can return any product within 14 days of receiving it.';
+
+  @override
+  String get support_faq_q3 => 'Is online payment secure?';
+
+  @override
+  String get support_faq_a3 =>
+      'Yes, all transactions are encrypted with 256-bit SSL technology.';
+
+  @override
+  String get support_faq_q4 => 'When will my order arrive?';
+
+  @override
+  String get support_faq_a4 =>
+      'Usually within 2-5 business days within the Kingdom.';
+
+  @override
+  String get support_faq_q5 => 'How do I use a discount coupon?';
+
+  @override
+  String get support_faq_a5 =>
+      'Enter the coupon code at checkout before confirming your order.';
+
+  @override
+  String get privacy_title => 'Privacy Policy';
+
+  @override
+  String get privacy_data_section => 'Data Collection & Use';
+
+  @override
+  String get privacy_payment_section => 'Payment Security';
+
+  @override
+  String get privacy_rights_section => 'Your Rights';
 
   @override
   String get address_title => 'Addresses';
@@ -460,6 +748,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get address_saved => 'Address saved';
 
   @override
+  String get address_empty => 'No saved addresses';
+
+  @override
+  String get address_empty_desc => 'Add an address to speed up checkout.';
+
+  @override
+  String get address_delete_confirm => 'Delete this address?';
+
+  @override
   String get notifications_title => 'Notifications';
 
   @override
@@ -467,6 +764,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notifications_mark_read => 'Mark All as Read';
+
+  @override
+  String get notifications_order_update => 'Order Update';
+
+  @override
+  String get notifications_promo => 'Special Offers';
 
   @override
   String get settings_title => 'Settings';
@@ -499,6 +802,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_version => 'App Version';
 
   @override
+  String get settings_currency => 'Currency';
+
+  @override
   String get search_hint => 'What are you looking for?';
 
   @override
@@ -528,6 +834,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String get search_sort_popular => 'Most Popular';
 
   @override
+  String get search_recent => 'Recent Searches';
+
+  @override
+  String get search_clear_history => 'Clear History';
+
+  @override
+  String get search_no_history => 'No search history';
+
+  @override
+  String get search_categories => 'Categories';
+
+  @override
+  String search_all_results(String query) {
+    return 'All results for \"$query\"';
+  }
+
+  @override
+  String get search_filter_price_range => 'Price Range';
+
+  @override
+  String get search_filter_min_rating => 'Minimum Rating';
+
+  @override
+  String get search_filter_category => 'Category';
+
+  @override
+  String get search_filter_reset => 'Reset Filters';
+
+  @override
   String get review_write => 'Write a Review';
 
   @override
@@ -546,4 +881,47 @@ class AppLocalizationsEn extends AppLocalizations {
   String review_rating_label(int count) {
     return '$count ratings';
   }
+
+  @override
+  String get review_submitted => 'Your review was submitted successfully';
+
+  @override
+  String get review_helpful => 'Was this helpful?';
+
+  @override
+  String get coupon_title => 'Coupons & Offers';
+
+  @override
+  String get coupon_invalid => 'Invalid coupon code';
+
+  @override
+  String get coupon_expired => 'This coupon has expired';
+
+  @override
+  String coupon_min_order(double amount) {
+    return 'Minimum order $amount SAR';
+  }
+
+  @override
+  String coupon_applied(String code) {
+    return 'Coupon $code applied';
+  }
+
+  @override
+  String get coupon_removed => 'Coupon removed';
+
+  @override
+  String get admin_dashboard => 'Dashboard';
+
+  @override
+  String get admin_products => 'Products';
+
+  @override
+  String get admin_orders => 'Orders';
+
+  @override
+  String get admin_users => 'Users';
+
+  @override
+  String get admin_analytics => 'Analytics';
 }

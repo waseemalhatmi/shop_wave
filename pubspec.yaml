@@ -59,6 +59,8 @@ dependencies:
   package_info_plus: ^10.2.1
   permission_handler: ^11.3.1
   path_provider: ^2.1.5
+  flutter_animate: ^4.5.2
+  vibration: ^3.1.8
 
 dev_dependencies:
   flutter_test:
