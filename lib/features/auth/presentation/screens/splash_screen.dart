@@ -57,9 +57,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     if (!mounted) return;
     switch (state) {
       case AuthAuthenticated():
-        context.go(AppRoutes.home);
       case AuthUnauthenticated():
-        context.go(AppRoutes.onboarding);
+        context.go(AppRoutes.home);
       case AuthInitial():
       case AuthError():
         break;

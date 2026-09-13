@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/di/providers.dart';
+import '../../../auth/presentation/providers/auth_notifier.dart';
 import '../../../products/domain/entities/product_entity.dart';
 import '../../domain/repositories/favorites_repository.dart';
 import '../../data/datasources/favorites_remote_data_source.dart';
@@ -15,6 +16,10 @@ final favoritesRepositoryProvider = Provider<FavoritesRepository>((ref) {
 class Favorites extends AsyncNotifier<List<ProductEntity>> {
   @override
   Future<List<ProductEntity>> build() async {
+    final authState = ref.watch(authNotifierProvider);
+    if (authState is! AuthAuthenticated) {
+      return [];
+    }
     final repository = ref.watch(favoritesRepositoryProvider);
     final result = await repository.getFavorites();
     return result.fold<List<ProductEntity>>(

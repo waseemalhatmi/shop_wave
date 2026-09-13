@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/guest_auth_prompt.dart';
+import '../../../auth/presentation/providers/auth_notifier.dart';
 import '../../domain/entities/review_entity.dart';
 import '../providers/reviews_providers.dart';
 
@@ -14,6 +16,25 @@ class ReviewsScreen extends ConsumerWidget {
   });
 
   final String productId;
+
+  void _onWriteReview(BuildContext context, WidgetRef ref) {
+    final authState = ref.read(authNotifierProvider);
+    if (authState is! AuthAuthenticated) {
+      final isAr = Localizations.localeOf(context).languageCode == 'ar';
+      GuestAuthPrompt.show(
+        context,
+        title: isAr ? 'كتابة تقييم تتطلب حساباً' : 'Sign in to write a Review',
+        message: isAr
+            ? 'يرجى تسجيل الدخول لمشاركة تجربتك وتقييم المنتج ومساعدة المتسوقين.'
+            : 'Please sign in to share your review, rate this product, and help other shoppers.',
+        icon: Icons.rate_review_outlined,
+      );
+      return;
+    }
+    context.push(
+      AppRoutes.writeReview.replaceAll(':productId', productId),
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,9 +54,7 @@ class ReviewsScreen extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.rate_review_outlined),
-            onPressed: () => context.push(
-              AppRoutes.writeReview.replaceAll(':productId', productId),
-            ),
+            onPressed: () => _onWriteReview(context, ref),
           ),
         ],
       ),
@@ -50,9 +69,7 @@ class ReviewsScreen extends ConsumerWidget {
         error: (error, _) => _buildErrorState(context, ref, error),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push(
-          AppRoutes.writeReview.replaceAll(':productId', productId),
-        ),
+        onPressed: () => _onWriteReview(context, ref),
         icon: const Icon(Icons.rate_review),
         label: const Text(
           'Write a Review',

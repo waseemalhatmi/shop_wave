@@ -8,8 +8,10 @@ import '../../../core/router/app_routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/utils/app_haptics.dart';
+import '../../../features/auth/presentation/providers/auth_notifier.dart';
 import '../../../features/favorites/presentation/providers/favorites_providers.dart';
 import '../../../features/products/domain/entities/product_entity.dart';
+import 'guest_auth_prompt.dart';
 
 /// Reusable product card used across Home, Categories, Search, etc.
 ///
@@ -37,6 +39,9 @@ class ProductCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final isAr = Localizations.localeOf(context).languageCode == 'ar';
+    final authState = ref.watch(authNotifierProvider);
+    final isAuthenticated = authState is AuthAuthenticated;
 
     // Use passed isFavorite or watch from providers
     final bool favoriteStatus = isFavorite ?? ref.watch(isFavoriteProvider(product.id));
@@ -45,6 +50,17 @@ class ProductCard extends ConsumerWidget {
     final toggleAction = onFavoriteToggle ??
         () {
           AppHaptics.light();
+          if (!isAuthenticated) {
+            GuestAuthPrompt.show(
+              context,
+              title: isAr ? 'المفضلة تتطلب حساباً' : 'Sign in to add to Wishlist',
+              message: isAr
+                  ? 'سجل دخولك لحفظ "${product.localizedName('ar')}" في قائمة رغباتك والرجوع إليه لاحقاً.'
+                  : 'Sign in or create an account to save "${product.localizedName('en')}" to your wishlist.',
+              icon: Icons.favorite_rounded,
+            );
+            return;
+          }
           ref.read(favoritesProvider.notifier).toggleFavorite(product);
         };
 

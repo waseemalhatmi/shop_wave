@@ -4,7 +4,9 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/guest_auth_prompt.dart';
 import '../../../../core/extensions/context_ext.dart';
+import '../../../auth/presentation/providers/auth_notifier.dart';
 import '../../../cart/presentation/providers/cart_notifier.dart';
 import '../../domain/entities/product_entity.dart';
 import '../../../favorites/presentation/providers/favorites_providers.dart';
@@ -165,6 +167,19 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
                         : null,
                   ),
                   onPressed: () {
+                    final authState = ref.read(authNotifierProvider);
+                    if (authState is! AuthAuthenticated) {
+                      final isAr = Localizations.localeOf(context).languageCode == 'ar';
+                      GuestAuthPrompt.show(
+                        context,
+                        title: isAr ? 'المفضلة تتطلب حساباً' : 'Sign in to add to Wishlist',
+                        message: isAr
+                            ? 'سجل دخولك لحفظ "${product.localizedName('ar')}" في قائمة رغباتك والرجوع إليه لاحقاً.'
+                            : 'Sign in or create an account to save "${product.localizedName('en')}" to your wishlist.',
+                        icon: Icons.favorite_rounded,
+                      );
+                      return;
+                    }
                     ref.read(favoritesProvider.notifier).toggleFavorite(product);
                   },
                 ),

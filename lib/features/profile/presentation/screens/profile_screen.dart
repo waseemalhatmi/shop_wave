@@ -6,6 +6,7 @@ import '../../../../core/extensions/context_ext.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/guest_auth_prompt.dart';
 import '../../../auth/presentation/providers/auth_notifier.dart';
 import '../providers/profile_providers.dart';
 
@@ -45,75 +46,145 @@ class ProfileScreen extends ConsumerWidget {
               ),
               child: Column(
                 children: [
-                  // Avatar
-                  Stack(
-                    children: [
-                      Container(
-                        width: 88,
-                        height: 88,
-                        decoration: BoxDecoration(
-                          color: AppColors.white.withValues(alpha: 0.2),
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: AppColors.white.withValues(alpha: 0.5),
-                            width: 3,
+                  if (user != null) ...[
+                    // Avatar
+                    Stack(
+                      children: [
+                        Container(
+                          width: 88,
+                          height: 88,
+                          decoration: BoxDecoration(
+                            color: AppColors.white.withValues(alpha: 0.2),
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: AppColors.white.withValues(alpha: 0.5),
+                              width: 3,
+                            ),
                           ),
-                        ),
-                        child: user?.avatarUrl != null
-                            ? ClipOval(
-                                child: Image.network(
-                                  user!.avatarUrl!,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      _InitialsAvatar(initials: user.initials),
+                          child: user.avatarUrl != null
+                              ? ClipOval(
+                                  child: Image.network(
+                                    user.avatarUrl!,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) =>
+                                        _InitialsAvatar(initials: user.initials),
+                                  ),
+                                )
+                              : _InitialsAvatar(
+                                  initials: user.initials,
                                 ),
-                              )
-                            : _InitialsAvatar(
-                                initials: user?.initials ?? '?',
+                        ),
+                        // Edit button
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: GestureDetector(
+                            onTap: () => context.push(AppRoutes.editProfile),
+                            child: Container(
+                              width: 26,
+                              height: 26,
+                              decoration: const BoxDecoration(
+                                color: AppColors.white,
+                                shape: BoxShape.circle,
                               ),
-                      ),
-                      // Edit button
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: GestureDetector(
-                          onTap: () => context.push(AppRoutes.editProfile),
-                          child: Container(
-                            width: 26,
-                            height: 26,
-                            decoration: const BoxDecoration(
-                              color: AppColors.white,
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.edit_rounded,
-                              size: 14,
-                              color: AppColors.primary,
+                              child: const Icon(
+                                Icons.edit_rounded,
+                                size: 14,
+                                color: AppColors.primary,
+                              ),
                             ),
                           ),
                         ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    Text(
+                      user.displayName,
+                      style: const TextStyle(
+                        fontFamily: 'Outfit',
+                        fontSize: 22,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.white,
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  Text(
-                    user?.displayName ?? (isAr ? 'زائر' : 'Guest'),
-                    style: const TextStyle(
-                      fontFamily: 'Outfit',
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.white,
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    user?.email ?? '',
-                    style: TextStyle(
-                      fontFamily: 'Outfit',
-                      fontSize: 14,
-                      color: AppColors.white.withValues(alpha: 0.85),
+                    const SizedBox(height: 4),
+                    Text(
+                      user.email,
+                      style: TextStyle(
+                        fontFamily: 'Outfit',
+                        fontSize: 14,
+                        color: AppColors.white.withValues(alpha: 0.85),
+                      ),
                     ),
-                  ),
+                  ] else ...[
+                    // Guest Header
+                    Container(
+                      width: 88,
+                      height: 88,
+                      decoration: BoxDecoration(
+                        color: AppColors.white.withValues(alpha: 0.2),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: AppColors.white.withValues(alpha: 0.5),
+                          width: 3,
+                        ),
+                      ),
+                      child: const Icon(
+                        Icons.person_outline_rounded,
+                        size: 44,
+                        color: AppColors.white,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    Text(
+                      isAr ? 'مرحباً بك في ShopWave 👋' : 'Welcome to ShopWave 👋',
+                      style: const TextStyle(
+                        fontFamily: 'Outfit',
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Text(
+                        isAr
+                            ? 'سجّل دخولك للوصول إلى طلباتك وعناوينك وإعدادات حسابك'
+                            : 'Sign in to access your orders, addresses, and account settings',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: 'Outfit',
+                          fontSize: 13,
+                          color: AppColors.white.withValues(alpha: 0.9),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    ElevatedButton.icon(
+                      onPressed: () => context.push(AppRoutes.login),
+                      icon: const Icon(Icons.login_rounded, size: 18),
+                      label: Text(
+                        isAr ? 'تسجيل الدخول / إنشاء حساب' : 'Sign In / Register',
+                        style: const TextStyle(
+                          fontFamily: 'Outfit',
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.white,
+                        foregroundColor: AppColors.primary,
+                        elevation: 3,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 10,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -127,27 +198,53 @@ class ProfileScreen extends ConsumerWidget {
                 children: [
                   _StatCard(
                     label: isAr ? 'الطلبات' : 'Orders',
-                    value: stats != null ? '${stats.ordersCount}' : '...',
+                    value: user != null && stats != null ? '${stats.ordersCount}' : '0',
                     icon: Icons.shopping_bag_outlined,
-                    onTap: () => context.push(AppRoutes.orders),
+                    onTap: () {
+                      if (user == null) {
+                        GuestAuthPrompt.show(
+                          context,
+                          title: isAr ? 'سجل الطلبات' : 'Order History',
+                          message: isAr
+                              ? 'سجّل دخولك لتتبع مشترياتك السابقة والحالية ومعرفة حالة الشحن.'
+                              : 'Sign in to view your past and active orders and track shipping.',
+                          icon: Icons.receipt_long_outlined,
+                        );
+                      } else {
+                        context.push(AppRoutes.orders);
+                      }
+                    },
                   ),
                   const SizedBox(width: AppSpacing.md),
                   _StatCard(
                     label: isAr ? 'المفضلة' : 'Wishlist',
-                    value: stats != null ? '${stats.wishlistCount}' : '...',
+                    value: user != null && stats != null ? '${stats.wishlistCount}' : '0',
                     icon: Icons.favorite_outline_rounded,
                     onTap: () => context.push(AppRoutes.favorites),
                   ),
                   const SizedBox(width: AppSpacing.md),
                   _StatCard(
                     label: isAr ? 'التقييمات' : 'Reviews',
-                    value: stats != null ? '${stats.reviewsCount}' : '...',
+                    value: user != null && stats != null ? '${stats.reviewsCount}' : '0',
                     icon: Icons.star_outline_rounded,
-                    onTap: () => _showReviewsInfo(
-                      context,
-                      isAr,
-                      stats?.reviewsCount ?? 0,
-                    ),
+                    onTap: () {
+                      if (user == null) {
+                        GuestAuthPrompt.show(
+                          context,
+                          title: isAr ? 'التقييمات والمراجعات' : 'Reviews',
+                          message: isAr
+                              ? 'سجّل دخولك لإضافة ومراجعة تقييمات المنتجات ومساعدة المتسوقين.'
+                              : 'Sign in to write product reviews and view your review history.',
+                          icon: Icons.star_outline_rounded,
+                        );
+                      } else {
+                        _showReviewsInfo(
+                          context,
+                          isAr,
+                          stats?.reviewsCount ?? 0,
+                        );
+                      }
+                    },
                   ),
                 ],
               ),
@@ -168,29 +265,94 @@ class ProfileScreen extends ConsumerWidget {
                       _ProfileMenuItem(
                         icon: Icons.person_outline_rounded,
                         label: context.l10n.profile_edit,
-                        onTap: () => context.push(AppRoutes.editProfile),
+                        onTap: () {
+                          if (user == null) {
+                            GuestAuthPrompt.show(
+                              context,
+                              title: isAr ? 'تعديل الملف الشخصي' : 'Edit Profile',
+                              message: isAr
+                                  ? 'سجّل دخولك لتعديل بياناتك الشخصية وصورة الحساب.'
+                                  : 'Sign in to update your personal information and profile picture.',
+                              icon: Icons.person_outline_rounded,
+                            );
+                          } else {
+                            context.push(AppRoutes.editProfile);
+                          }
+                        },
                       ),
                       _ProfileMenuItem(
                         icon: Icons.shield_outlined,
                         label: isAr
                             ? 'الأمان وكلمة المرور'
                             : 'Security & Password',
-                        onTap: () => context.push(AppRoutes.security),
+                        onTap: () {
+                          if (user == null) {
+                            GuestAuthPrompt.show(
+                              context,
+                              title: isAr ? 'الأمان وكلمة المرور' : 'Security & Password',
+                              message: isAr
+                                  ? 'سجّل دخولك لإدارة أمان حسابك وكلمة المرور.'
+                                  : 'Sign in to manage your account security and password.',
+                              icon: Icons.shield_outlined,
+                            );
+                          } else {
+                            context.push(AppRoutes.security);
+                          }
+                        },
                       ),
                       _ProfileMenuItem(
                         icon: Icons.location_on_outlined,
                         label: context.l10n.profile_addresses,
-                        onTap: () => context.push(AppRoutes.addresses),
+                        onTap: () {
+                          if (user == null) {
+                            GuestAuthPrompt.show(
+                              context,
+                              title: isAr ? 'العناوين المحفوظة' : 'Saved Addresses',
+                              message: isAr
+                                  ? 'سجّل دخولك لإدارة عناوين الشحن والتوصيل الخاصة بك.'
+                                  : 'Sign in to manage your saved delivery addresses.',
+                              icon: Icons.location_on_outlined,
+                            );
+                          } else {
+                            context.push(AppRoutes.addresses);
+                          }
+                        },
                       ),
                       _ProfileMenuItem(
                         icon: Icons.receipt_long_outlined,
                         label: context.l10n.profile_orders,
-                        onTap: () => context.push(AppRoutes.orders),
+                        onTap: () {
+                          if (user == null) {
+                            GuestAuthPrompt.show(
+                              context,
+                              title: isAr ? 'سجل الطلبات' : 'My Orders',
+                              message: isAr
+                                  ? 'سجّل دخولك للاطلاع على طلباتك وتتبع شحناتك.'
+                                  : 'Sign in to view your orders and track shipments.',
+                              icon: Icons.receipt_long_outlined,
+                            );
+                          } else {
+                            context.push(AppRoutes.orders);
+                          }
+                        },
                       ),
                       _ProfileMenuItem(
                         icon: Icons.notifications_outlined,
                         label: context.l10n.profile_notifications,
-                        onTap: () => context.push(AppRoutes.notifications),
+                        onTap: () {
+                          if (user == null) {
+                            GuestAuthPrompt.show(
+                              context,
+                              title: isAr ? 'الإشعارات' : 'Notifications',
+                              message: isAr
+                                  ? 'سجّل دخولك لتلقي تنبيهات العروض والطلبات الخاصة بك.'
+                                  : 'Sign in to view your personalized notifications and deal alerts.',
+                              icon: Icons.notifications_outlined,
+                            );
+                          } else {
+                            context.push(AppRoutes.notifications);
+                          }
+                        },
                       ),
                     ],
                   ),
@@ -217,37 +379,39 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: AppSpacing.md),
                   // ── Admin Panel button (only for admins) ───────────
-                  if (user != null && user.isAdmin) ...
-                    [
-                      _AdminPanelButton(user: user),
-                      const SizedBox(height: AppSpacing.md),
-                    ],
-                  // Sign Out
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      onPressed: () async {
-                        await ref
-                            .read(authNotifierProvider.notifier)
-                            .signOut();
-                      },
-                      icon: const Icon(
-                        Icons.logout_rounded,
-                        color: AppColors.badge,
-                      ),
-                      label: Text(
-                        context.l10n.auth_logout,
-                        style: const TextStyle(color: AppColors.badge),
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(AppSpacing.buttonHeight),
-                        side: const BorderSide(color: AppColors.badge),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+                  if (user != null && user.isAdmin) ...[
+                    _AdminPanelButton(user: user),
+                    const SizedBox(height: AppSpacing.md),
+                  ],
+                  // Sign Out (only for logged-in users)
+                  if (user != null) ...[
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: () async {
+                          await ref
+                              .read(authNotifierProvider.notifier)
+                              .signOut();
+                        },
+                        icon: const Icon(
+                          Icons.logout_rounded,
+                          color: AppColors.badge,
+                        ),
+                        label: Text(
+                          context.l10n.auth_logout,
+                          style: const TextStyle(color: AppColors.badge),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          minimumSize:
+                              const Size.fromHeight(AppSpacing.buttonHeight),
+                          side: const BorderSide(color: AppColors.badge),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                  ],
                   const SizedBox(height: AppSpacing.xxl),
                 ],
               ),

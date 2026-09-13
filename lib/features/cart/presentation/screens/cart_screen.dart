@@ -4,7 +4,9 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/guest_auth_prompt.dart';
 import '../../../../core/extensions/context_ext.dart';
+import '../../../auth/presentation/providers/auth_notifier.dart';
 import '../../domain/entities/cart_entity.dart';
 import '../providers/cart_notifier.dart';
 
@@ -516,12 +518,12 @@ class _SummaryRow extends StatelessWidget {
 
 // ─── Checkout Bar ─────────────────────────────────────────────────────────────
 
-class _CheckoutBar extends StatelessWidget {
+class _CheckoutBar extends ConsumerWidget {
   const _CheckoutBar({required this.total});
   final double total;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final isAr = Localizations.localeOf(context).languageCode == 'ar';
     return Container(
@@ -542,7 +544,21 @@ class _CheckoutBar extends StatelessWidget {
         ],
       ),
       child: ElevatedButton(
-        onPressed: () => context.push(AppRoutes.checkout),
+        onPressed: () {
+          final authState = ref.read(authNotifierProvider);
+          if (authState is! AuthAuthenticated) {
+            GuestAuthPrompt.show(
+              context,
+              title: isAr ? 'تسجيل الدخول مطلوب للشراء' : 'Sign in required to Checkout',
+              message: isAr
+                  ? 'يرجى تسجيل الدخول أو إنشاء حساب لإتمام الطلب وتحديد عنوان التوصيل. ستبقى منتجاتك في السلة بأمان.'
+                  : 'Please sign in or register to complete your order and specify your delivery address. Your cart items will remain saved.',
+              icon: Icons.shopping_bag_outlined,
+            );
+            return;
+          }
+          context.push(AppRoutes.checkout);
+        },
         style: ElevatedButton.styleFrom(
           minimumSize: const Size.fromHeight(AppSpacing.buttonHeight),
           shape: RoundedRectangleBorder(

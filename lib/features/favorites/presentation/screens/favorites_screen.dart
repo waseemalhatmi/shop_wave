@@ -6,7 +6,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/product_card.dart';
 import '../../../../core/extensions/context_ext.dart';
-
+import '../../../auth/presentation/providers/auth_notifier.dart';
 import '../providers/favorites_providers.dart';
 
 /// Favorites screen.
@@ -17,9 +17,11 @@ class FavoritesScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final productsAsync = ref.watch(favoritesProvider);
-
     final isAr = Localizations.localeOf(context).languageCode == 'ar';
+    final authState = ref.watch(authNotifierProvider);
+    final isAuthenticated = authState is AuthAuthenticated;
+
+    final productsAsync = isAuthenticated ? ref.watch(favoritesProvider) : null;
 
     return Scaffold(
       backgroundColor:
@@ -32,9 +34,11 @@ class FavoritesScreen extends ConsumerWidget {
         backgroundColor: AppColors.transparent,
         elevation: 0,
       ),
-      body: RefreshIndicator(
-        onRefresh: () => ref.refresh(favoritesProvider.future),
-        child: productsAsync.when(
+      body: !isAuthenticated
+          ? _buildGuestState(context, isAr)
+          : RefreshIndicator(
+              onRefresh: () => ref.refresh(favoritesProvider.future),
+              child: productsAsync!.when(
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (error, __) => _buildErrorState(context, ref, error),
           data: (products) {
@@ -149,6 +153,93 @@ class FavoritesScreen extends ConsumerWidget {
               ElevatedButton(
                 onPressed: () => ref.invalidate(favoritesProvider),
                 child: Text(context.l10n.general_retry),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGuestState(BuildContext context, bool isAr) {
+    return Center(
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.xl),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      AppColors.primary.withValues(alpha: 0.15),
+                      AppColors.badge.withValues(alpha: 0.1),
+                    ],
+                  ),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: AppColors.badge.withValues(alpha: 0.25),
+                    width: 2,
+                  ),
+                ),
+                child: const Icon(
+                  Icons.favorite_rounded,
+                  size: 48,
+                  color: AppColors.badge,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              Text(
+                isAr ? 'قائمة أمنياتك بانتظارك!' : 'Your Wishlist is Waiting!',
+                style: const TextStyle(
+                  fontFamily: 'Outfit',
+                  fontSize: 22,
+                  fontWeight: FontWeight.w700,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              Text(
+                isAr
+                    ? 'سجّل دخولك الآن لحفظ المنتجات المميزة، ومتابعة عروضها وأسعارها في أي وقت.'
+                    : 'Sign in now to save your favorite items and track special deals anytime.',
+                style: TextStyle(
+                  fontFamily: 'Outfit',
+                  fontSize: 14,
+                  height: 1.5,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: AppSpacing.xl),
+              SizedBox(
+                width: 240,
+                height: 48,
+                child: ElevatedButton.icon(
+                  onPressed: () => context.push(AppRoutes.login),
+                  icon: const Icon(Icons.login_rounded, size: 20),
+                  label: Text(
+                    isAr ? 'تسجيل الدخول' : 'Sign In',
+                    style: const TextStyle(
+                      fontFamily: 'Outfit',
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: AppColors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),

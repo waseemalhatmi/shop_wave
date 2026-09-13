@@ -157,27 +157,43 @@ final class AppRouter {
 
   /// Auth + Admin guard — runs before every navigation.
   static String? _authGuard(BuildContext context, GoRouterState state, ProviderContainer container) {
-    const publicRoutes = {
-      AppRoutes.splash,
-      AppRoutes.onboarding,
+    const authEntryRoutes = {
       AppRoutes.login,
       AppRoutes.register,
       AppRoutes.forgotPassword,
       AppRoutes.otp,
+      AppRoutes.onboarding,
+    };
+
+    const protectedRoutes = {
+      AppRoutes.checkout,
+      AppRoutes.orderConfirmed,
+      AppRoutes.orders,
+      AppRoutes.orderDetail,
+      AppRoutes.editProfile,
+      AppRoutes.security,
+      AppRoutes.addresses,
+      AppRoutes.addAddress,
+      AppRoutes.editAddress,
+      AppRoutes.writeReview,
     };
 
     final path = state.uri.path;
-    final isPublicRoute = publicRoutes.contains(path) ||
-        (path != AppRoutes.splash && publicRoutes.any((r) => r != AppRoutes.splash && path.startsWith(r)));
+    final isAuthEntryRoute = authEntryRoutes.contains(path) ||
+        authEntryRoutes.any((r) => path.startsWith(r));
+    final isProtectedRoute = protectedRoutes.contains(path) ||
+        protectedRoutes.any((r) => path.startsWith(r));
     final isAdminRoute = path.startsWith('/admin');
 
     final authState = container.read(authNotifierProvider);
 
-    // Redirect authenticated users away from public routes
-    if (authState is AuthAuthenticated && isPublicRoute) return AppRoutes.home;
+    // Redirect authenticated users away from login/register/onboarding to home
+    if (authState is AuthAuthenticated && isAuthEntryRoute) return AppRoutes.home;
 
-    // Redirect unauthenticated users to login
-    if (authState is AuthUnauthenticated && !isPublicRoute) return AppRoutes.login;
+    // Protect routes that strictly require authentication
+    if (authState is! AuthAuthenticated && (isProtectedRoute || isAdminRoute)) {
+      return AppRoutes.login;
+    }
 
     // Protect admin routes — only admin/super_admin can access
     if (isAdminRoute && authState is AuthAuthenticated) {

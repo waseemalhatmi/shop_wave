@@ -1,0 +1,1 @@
+flutter run -d RZCXC0DXJWV --dart-define-from-file=.env

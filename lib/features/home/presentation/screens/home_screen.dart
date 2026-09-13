@@ -162,6 +162,8 @@ class _HomeAppBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final isAr = Localizations.localeOf(context).languageCode == 'ar';
+    final authState = ref.watch(authNotifierProvider);
+    final isAuthenticated = authState is AuthAuthenticated;
 
     return SliverAppBar(
       floating: true,
@@ -173,7 +175,9 @@ class _HomeAppBar extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            isAr ? '${_greeting(isAr)}، 👋' : 'Good ${_greeting(isAr)}, 👋',
+            isAuthenticated
+                ? (isAr ? '${_greeting(isAr)}، 👋' : 'Good ${_greeting(isAr)}, 👋')
+                : (isAr ? 'مرحباً بك، 👋' : 'Welcome to, 👋'),
             style: TextStyle(
               fontFamily: 'Outfit',
               fontSize: 13,
@@ -183,7 +187,7 @@ class _HomeAppBar extends ConsumerWidget {
             ),
           ),
           Text(
-            userName,
+            isAuthenticated ? userName : 'ShopWave',
             style: TextStyle(
               fontFamily: 'Outfit',
               fontSize: 20,
@@ -194,22 +198,50 @@ class _HomeAppBar extends ConsumerWidget {
         ],
       ),
       actions: [
-        // Notifications
-        IconButton(
-          icon: Badge(
-            isLabelVisible: true,
-            smallSize: 8,
-            backgroundColor: AppColors.badge,
-            child: Icon(
-              Icons.notifications_outlined,
-              color: isDark
-                  ? AppColors.onSurfaceDark
-                  : AppColors.onSurfaceLight,
+        if (isAuthenticated) ...[
+          // Notifications for authenticated user
+          IconButton(
+            icon: Badge(
+              isLabelVisible: true,
+              smallSize: 8,
+              backgroundColor: AppColors.badge,
+              child: Icon(
+                Icons.notifications_outlined,
+                color: isDark
+                    ? AppColors.onSurfaceDark
+                    : AppColors.onSurfaceLight,
+              ),
+            ),
+            onPressed: () => context.push(AppRoutes.notifications),
+          ),
+        ] else ...[
+          // Prominent Sign In button for Guest user
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: ElevatedButton.icon(
+              onPressed: () => context.push(AppRoutes.login),
+              icon: const Icon(Icons.login_rounded, size: 16),
+              label: Text(
+                isAr ? 'تسجيل الدخول' : 'Sign In',
+                style: const TextStyle(
+                  fontFamily: 'Outfit',
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: AppColors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                elevation: 1,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
             ),
           ),
-          onPressed: () => context.push(AppRoutes.notifications),
-        ),
-        // Cart
+        ],
+        // Cart icon for all users (guests can also add items to cart)
         IconButton(
           icon: Icon(
             Icons.shopping_cart_outlined,
