@@ -141,7 +141,7 @@ class AdminRemoteDataSource {
       if (variants != null && variants.isNotEmpty) {
         await _syncVariants(result['id'] as String, variants);
       }
-      return result as Map<String, dynamic>;
+      return result;
     } catch (e, st) {
       AppLogger.e('AdminDS.createProduct', error: e, stackTrace: st);
       throw ServerAppException('Failed to create product: $e');
@@ -188,24 +188,30 @@ class AdminRemoteDataSource {
           var attrRes = await _supabase.from('product_attributes').select('id').eq('name_en', attrName).maybeSingle();
           String attrId;
           if (attrRes == null) {
-            final newAttr = await _supabase.from('product_attributes').insert({'name_en': attrName, 'name_ar': attrName}).select('id').single();
-            attrId = newAttr['id'];
+            final newAttr = await _supabase
+                .from('product_attributes')
+                .insert({'name_en': attrName, 'name_ar': attrName})
+                .select('id')
+                .single();
+            attrId = newAttr['id'] as String;
           } else {
-            attrId = attrRes['id'];
+            attrId = attrRes['id'] as String;
           }
           
           // Find or create value
           var valRes = await _supabase.from('product_attribute_values').select('id').eq('attribute_id', attrId).eq('value_en', attrVal).maybeSingle();
           String valueId;
           if (valRes == null) {
-            final newVal = await _supabase.from('product_attribute_values').insert({
+            final newVal = await _supabase
+                .from('product_attribute_values')
+                .insert({
               'attribute_id': attrId,
               'value_en': attrVal,
               'value_ar': attrVal,
             }).select('id').single();
-            valueId = newVal['id'];
+            valueId = newVal['id'] as String;
           } else {
-            valueId = valRes['id'];
+            valueId = valRes['id'] as String;
           }
           
           // Link variant to value
@@ -520,7 +526,7 @@ class AdminRemoteDataSource {
   Future<Map<String, dynamic>?> createCoupon(Map<String, dynamic> data) async {
     try {
       final result = await _supabase.from('coupons').insert(data).select().single();
-      return result as Map<String, dynamic>;
+      return result;
     } catch (e, st) {
       AppLogger.e('AdminDS.createCoupon', error: e, stackTrace: st);
       throw ServerAppException('Failed to create coupon: $e');
