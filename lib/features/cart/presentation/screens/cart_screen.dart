@@ -61,7 +61,7 @@ class _CartAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
+          Text( 
             isAr ? 'سلة التسوق' : 'Shopping Cart',
             style: TextStyle(
               fontFamily: 'Outfit',
